@@ -4,3 +4,8 @@
 - Load = HR + EDA only for MVP (IBI/RMSSD later).
 - Gold polled ~5 s by backend.
 - Default cut line (if behind): Sun 05:00 agent must work on fixtures; Sun 08:00 freeze; anything unfinished becomes "future work" slide.
+- Integrator (Sat 2026-10-03): pressure-v1 formula kept as specified; fixtures untouched; trigger fixture no longer auto-fires on HIGH_PRESSURE until the team picks calendar/threshold/formula (CHANGELOG #10).
+- Scheduler: greedy earliest-deadline, keeps still-valid blocks, re-places displaced study; rest protection = sleep_extension (target - protected minutes) + no study before it tonight.
+- Trigger config `demo-rules-1` lives in backend/app/trigger.py; "adequate overnight evidence" = overnight_coverage >= 0.60 (assumption, tune on real data).
+- Agent: no key -> deterministic fallback explanation; DATABRICKS_MODEL_ENDPOINT or LLM_API_KEY (claude-opus-5-5) optional; every LLM explanation must pass the grounding check or it is replaced by the fallback.
+- Backend reads Gold via databricks/sql/gold_latest.sql when Data B adds it (use `${table}` placeholder, `:run_id` param), else an inline query with the same columns.
