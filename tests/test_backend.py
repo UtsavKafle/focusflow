@@ -54,7 +54,7 @@ def test_decision_history_survives_reset():
     c.post(f"/api/replans/{jid}/apply", json={"expected_schedule_version": 2})
     d = c.get(f"/api/decisions/{jid}").json()
     assert d["before_version"] == 2 and d["after_version"] == 3 and d["state_id"] == st["state_id"]
-    assert d["rule_version"] == "demo-rules-1" and d["proposal"]["changes"]
+    assert d["rule_version"] == "demo-rules-2" and d["proposal"]["changes"]
     c.post("/api/replay/reset")
     assert c.get("/api/schedule").json()["schedule_version"] == 2   # fresh run
     assert c.get(f"/api/decisions/{jid}").json()["decision_id"] == jid  # audit kept

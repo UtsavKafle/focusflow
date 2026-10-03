@@ -16,7 +16,7 @@ from backend.app.academic import compute_academic
 from backend.app.events import EventBus
 from backend.app.sources import FIX, WearableSnapshot, WearableSource
 from backend.app.store import Store
-from backend.app.trigger import DEMO_RULES_1, TriggerContext, TriggerEngine
+from backend.app.trigger import ACTIVE_RULES, TriggerContext, TriggerEngine
 
 
 class ApiError(Exception):
@@ -32,7 +32,7 @@ class Services:
         self.bus = EventBus()
         if hasattr(source, "on_error"):  # Databricks boundary failures -> SSE pipeline.error
             source.on_error = lambda code, msg: self.bus.emit(self.run_id, "pipeline.error", {"code": code, "message": msg})
-        self.engine = TriggerEngine(DEMO_RULES_1)
+        self.engine = TriggerEngine(ACTIVE_RULES)
         from agent.agent import run_investigation
         self.investigator = investigator or run_investigation
         self.auto_apply = auto_apply  # demo setting (task 13): valid in-app proposals only; manual Apply is default
@@ -50,7 +50,7 @@ class Services:
         sched = Schedule.model_validate_json((d / "schedule.json").read_text())
         self.run_id = f"{self.scenario}-run-{uuid.uuid4().hex[:6]}"
         self.store.start_run(self.run_id, self.scenario, cal, sched)
-        self.engine = TriggerEngine(DEMO_RULES_1)
+        self.engine = TriggerEngine(ACTIVE_RULES)
         self._last_state_id = None
         return self.run_id
 
@@ -74,7 +74,7 @@ class Services:
         ctx = TriggerContext(pending_decision=bool(self.store.pending_jobs(self.run_id, self._versions())),
                              last_applied_at=self.store.last_applied_replay_time(self.run_id),
                              activity_confound=snap.activity_confound)
-        loads = self.source.minute_loads(snap.as_of, DEMO_RULES_1["sustained_window_minutes"] + 5)
+        loads = self.source.minute_loads(snap.as_of, ACTIVE_RULES["sustained_window_minutes"] + 5)
         trig = self.engine.evaluate(snap.as_of, snap.wearable, loads, academic, sched, ctx)
         if snap.stale:
             trig.replan_recommended = False

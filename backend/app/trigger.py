@@ -21,6 +21,11 @@ DEMO_RULES_1 = {
     "reset_load_threshold": 0.55,
 }
 
+# Team decision 2026-10-03: pressure-v1 yields ~0.12 on the demo calendar, so 0.70 never fires.
+# Lowered to 0.10 as a demo threshold (heuristic, not a calibrated cut-off); revisit with real data.
+DEMO_RULES_2 = {**DEMO_RULES_1, "rule_version": "demo-rules-2", "pressure_threshold": 0.10}
+ACTIVE_RULES = DEMO_RULES_2
+
 
 @dataclass
 class MinuteLoad:
@@ -36,7 +41,7 @@ class TriggerContext:
     activity_confound: bool = False              # from Gold `activity_confound`
 
 
-def sustained_load(history: list[MinuteLoad], as_of: datetime, cfg: dict = DEMO_RULES_1) -> bool:
+def sustained_load(history: list[MinuteLoad], as_of: datetime, cfg: dict = ACTIVE_RULES) -> bool:
     """Walk back from as_of over consecutive observed minutes; a missing/invalid minute ends the streak."""
     by_end = {h.window_end: h.load for h in history}
     streak, t = [], as_of
@@ -50,7 +55,7 @@ def sustained_load(history: list[MinuteLoad], as_of: datetime, cfg: dict = DEMO_
 
 
 def evaluate(as_of: datetime, wearable: WearableState, history: list[MinuteLoad], academic: AcademicState,
-             schedule: Schedule, ctx: TriggerContext, cfg: dict = DEMO_RULES_1) -> Trigger:
+             schedule: Schedule, ctx: TriggerContext, cfg: dict = ACTIVE_RULES) -> Trigger:
     codes, supp = [], []
     q = wearable.quality
 
@@ -88,7 +93,7 @@ def evaluate(as_of: datetime, wearable: WearableState, history: list[MinuteLoad]
 class TriggerEngine:
     """Holds hysteresis state per run. `consume()` when a replan is started from a recommendation."""
 
-    def __init__(self, cfg: dict = DEMO_RULES_1):
+    def __init__(self, cfg: dict = ACTIVE_RULES):
         self.cfg, self.armed = cfg, True
 
     def observe(self, load: Optional[float]) -> None:

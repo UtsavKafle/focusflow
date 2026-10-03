@@ -9,3 +9,4 @@
 - Trigger config `demo-rules-1` lives in backend/app/trigger.py; "adequate overnight evidence" = overnight_coverage >= 0.60 (assumption, tune on real data).
 - Agent: no key -> deterministic fallback explanation; DATABRICKS_MODEL_ENDPOINT or LLM_API_KEY (claude-opus-5-5) optional; every LLM explanation must pass the grounding check or it is replaced by the fallback.
 - Backend reads Gold via databricks/sql/gold_latest.sql when Data B adds it (use `${table}` placeholder, `:run_id` param), else an inline query with the same columns.
+- Trigger now runs `demo-rules-2` (pressure threshold 0.10 instead of 0.70) so the demo fires with the pressure-v1 formula; HIGH_PRESSURE is on in every fixture, so load + rest discriminate. Revisit before freeze.

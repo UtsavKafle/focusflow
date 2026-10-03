@@ -20,5 +20,5 @@ Start: `uvicorn backend.app.main:app --port 8000`. Fresh clone (no credentials):
 - Gold contract violation or query failure: SSE `pipeline.error`, last good state kept and labeled stale (trigger suppressed with `STALE_STATE`). Switch rungs if it persists.
 - Reset: `POST /api/replay/reset` starts a new run; earlier decisions remain retrievable at `/api/decisions/{id}`.
 
-## Known gap (team decision pending)
-With the real pressure formula (`pressure-v1`), the trigger fixture's pressure is about 0.12, below the 0.70 rule, so it shows SUSTAINED_LOAD + LIMITED_ESTIMATED_REST but no automatic recommendation. Manual replan (`POST /api/replan`) still produces the Tuesday revision. See `contracts/CHANGELOG.md`.
+## Trigger rules
+Active rules: `demo-rules-2` (pressure threshold 0.10; `demo-rules-1` used 0.70). The pressure-v1 formula gives ~0.12 on the demo calendar, so the trigger fixture fires. HIGH_PRESSURE is on in every fixture; load and rest decide. If asked: the threshold is a demo heuristic, not a calibrated cut-off. See `contracts/CHANGELOG.md` #16.

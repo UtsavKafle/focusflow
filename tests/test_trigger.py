@@ -27,7 +27,7 @@ def ev(st, hist, acad, sched, **ctx):
 def test_fires_when_all_conditions_hold():
     t = ev(*base())
     assert t.replan_recommended and t.reason_codes == ALL3 and t.suppressed_reason_codes == []
-    assert t.rule_version == "demo-rules-1"
+    assert t.rule_version == "demo-rules-2"
 
 
 def test_normal_load_does_not_fire():
@@ -66,7 +66,7 @@ def test_low_overnight_coverage_suppresses():
 
 def test_low_pressure_does_not_fire():
     st, hist, acad, sched = base()
-    acad.deadline_pressure = 0.5
+    acad.deadline_pressure = 0.05  # below the 0.10 demo threshold
     t = ev(st, hist, acad, sched)
     assert not t.replan_recommended and "HIGH_PRESSURE" not in t.reason_codes
 

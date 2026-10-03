@@ -11,11 +11,9 @@ def test_state_and_schedule():
     c = mk()
     st = c.get("/api/state").json()
     assert st["source_kind"] == "synthetic_fixture"
-    # Real pressure formula (pressure-v1) gives ~0.12 on this calendar, below the 0.70 rule: wearable codes hold,
-    # HIGH_PRESSURE does not, so no recommendation. Team decision pending (see contracts/CHANGELOG.md).
-    assert {"SUSTAINED_LOAD", "LIMITED_ESTIMATED_REST"} <= set(st["trigger"]["reason_codes"])
-    assert "HIGH_PRESSURE" not in st["trigger"]["reason_codes"] and not st["trigger"]["replan_recommended"]
-    assert st["academic"]["deadline_pressure"] < 0.70
+    # pressure-v1 gives ~0.12 here; demo-rules-2 fires at >= 0.10 (team decision, contracts/CHANGELOG.md #16)
+    assert st["trigger"]["reason_codes"] == ["SUSTAINED_LOAD", "LIMITED_ESTIMATED_REST", "HIGH_PRESSURE"]
+    assert st["trigger"]["replan_recommended"] and st["trigger"]["rule_version"] == "demo-rules-2"
     assert c.get("/api/schedule").json()["schedule_version"] == 2
     assert c.get("/api/health").json()["mode"] == "synthetic_fixture"
 
