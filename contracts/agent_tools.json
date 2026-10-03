@@ -1,0 +1,159 @@
+{
+  "schema_version": "1.0",
+  "tools": [
+    {
+      "name": "get_current_student_state",
+      "description": "Latest composed StudentState and versions.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "run_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id"
+        ]
+      }
+    },
+    {
+      "name": "get_physiology_history",
+      "description": "Bounded wearable windows with values, quality and evidence IDs.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "heart_rate_bpm",
+                "physiological_load",
+                "activity_level"
+              ]
+            }
+          }
+        },
+        "required": [
+          "start",
+          "end"
+        ]
+      }
+    },
+    {
+      "name": "compare_to_baseline",
+      "description": "Baseline cutoff and the actual deviation for one metric over a window.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "metric": {
+            "type": "string"
+          },
+          "window": {
+            "type": "string",
+            "description": "e.g. last_20_min, last_night"
+          }
+        },
+        "required": [
+          "metric",
+          "window"
+        ]
+      }
+    },
+    {
+      "name": "get_recent_rest",
+      "description": "Estimated rest intervals, coverage and limitations as of a time.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "as_of"
+        ]
+      }
+    },
+    {
+      "name": "get_upcoming_deadlines",
+      "description": "Calendar events and task deadlines after a time.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "as_of"
+        ]
+      }
+    },
+    {
+      "name": "get_remaining_tasks",
+      "description": "Explicit task progress and priorities.",
+      "input_schema": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "request_schedule_replan",
+      "description": "Ask the deterministic scheduler for a validated proposal. Does not apply it.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "state_id": {
+            "type": "string"
+          },
+          "schedule_version": {
+            "type": "integer"
+          },
+          "reason_codes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "SUSTAINED_LOAD",
+                "LIMITED_ESTIMATED_REST",
+                "HIGH_PRESSURE"
+              ]
+            }
+          }
+        },
+        "required": [
+          "state_id",
+          "schedule_version",
+          "reason_codes"
+        ]
+      }
+    },
+    {
+      "name": "get_schedule_change",
+      "description": "Saved before/after diff and evidence for a decision.",
+      "input_schema": {
+        "type": "object",
+        "properties": {
+          "decision_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision_id"
+        ]
+      }
+    }
+  ]
+}

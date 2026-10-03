@@ -1,0 +1,379 @@
+{
+  "$defs": {
+    "AcademicState": {
+      "additionalProperties": false,
+      "properties": {
+        "calendar_version": {
+          "title": "Calendar Version",
+          "type": "integer"
+        },
+        "deadline_pressure": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Deadline Pressure"
+        },
+        "hours_until_next_exam": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hours Until Next Exam"
+        },
+        "overdue_task_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Overdue Task Ids",
+          "type": "array"
+        },
+        "remaining_work_minutes": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Remaining Work Minutes",
+          "type": "integer"
+        },
+        "schedule_version": {
+          "title": "Schedule Version",
+          "type": "integer"
+        },
+        "tasks_version": {
+          "title": "Tasks Version",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "calendar_version",
+        "tasks_version",
+        "schedule_version"
+      ],
+      "title": "AcademicState",
+      "type": "object"
+    },
+    "Quality": {
+      "additionalProperties": false,
+      "properties": {
+        "acc_coverage": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Acc Coverage"
+        },
+        "eda_coverage": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Eda Coverage"
+        },
+        "hr_coverage": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Hr Coverage"
+        },
+        "missing_reasons": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Missing Reasons",
+          "type": "object"
+        },
+        "overnight_coverage": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Overnight Coverage"
+        },
+        "status": {
+          "enum": [
+            "sufficient",
+            "limited",
+            "unavailable"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "Quality",
+      "type": "object"
+    },
+    "Trigger": {
+      "additionalProperties": false,
+      "properties": {
+        "reason_codes": {
+          "items": {
+            "enum": [
+              "SUSTAINED_LOAD",
+              "LIMITED_ESTIMATED_REST",
+              "HIGH_PRESSURE"
+            ],
+            "type": "string"
+          },
+          "title": "Reason Codes",
+          "type": "array"
+        },
+        "replan_recommended": {
+          "title": "Replan Recommended",
+          "type": "boolean"
+        },
+        "rule_version": {
+          "default": "demo-rules-1",
+          "title": "Rule Version",
+          "type": "string"
+        },
+        "suppressed_reason_codes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Suppressed Reason Codes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "replan_recommended"
+      ],
+      "title": "Trigger",
+      "type": "object"
+    },
+    "WearableState": {
+      "additionalProperties": false,
+      "properties": {
+        "activity_level": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Activity Level"
+        },
+        "baseline_cutoff": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Cutoff"
+        },
+        "baseline_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Baseline Id"
+        },
+        "estimated_rest_minutes": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Estimated Rest Minutes"
+        },
+        "evidence_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        },
+        "heart_rate_bpm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heart Rate Bpm"
+        },
+        "physiological_load": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Physiological Load"
+        },
+        "quality": {
+          "$ref": "#/$defs/Quality"
+        },
+        "recovery_score": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recovery Score"
+        },
+        "target_rest_minutes": {
+          "default": 480,
+          "exclusiveMinimum": 0,
+          "title": "Target Rest Minutes",
+          "type": "integer"
+        },
+        "window_end": {
+          "format": "date-time",
+          "title": "Window End",
+          "type": "string"
+        },
+        "window_start": {
+          "format": "date-time",
+          "title": "Window Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "window_start",
+        "window_end",
+        "quality"
+      ],
+      "title": "WearableState",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "academic": {
+      "$ref": "#/$defs/AcademicState"
+    },
+    "as_of": {
+      "format": "date-time",
+      "title": "As Of",
+      "type": "string"
+    },
+    "participant_id": {
+      "title": "Participant Id",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "scenario_timezone": {
+      "title": "Scenario Timezone",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_kind": {
+      "enum": [
+        "recorded_replay",
+        "synthetic_fixture",
+        "synthetic_injection"
+      ],
+      "title": "Source Kind",
+      "type": "string"
+    },
+    "state_id": {
+      "title": "State Id",
+      "type": "string"
+    },
+    "trigger": {
+      "$ref": "#/$defs/Trigger"
+    },
+    "wearable": {
+      "$ref": "#/$defs/WearableState"
+    }
+  },
+  "required": [
+    "state_id",
+    "run_id",
+    "participant_id",
+    "as_of",
+    "scenario_timezone",
+    "source_kind",
+    "wearable",
+    "academic",
+    "trigger"
+  ],
+  "title": "StudentState",
+  "type": "object"
+}

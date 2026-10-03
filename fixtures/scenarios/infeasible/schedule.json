@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "schedule_version": 2,
+  "blocks": [
+    {
+      "start": "2026-10-13T13:00:00Z",
+      "end": "2026-10-13T14:00:00Z",
+      "block_id": "fixed-stat-exam",
+      "task_id": null,
+      "kind": "fixed",
+      "locked": true
+    },
+    {
+      "start": "2026-10-13T15:45:00Z",
+      "end": "2026-10-13T17:00:00Z",
+      "block_id": "fixed-csc316-lecture",
+      "task_id": null,
+      "kind": "fixed",
+      "locked": true
+    },
+    {
+      "start": "2026-10-14T18:00:00Z",
+      "end": "2026-10-14T18:30:00Z",
+      "block_id": "fixed-db-quiz",
+      "task_id": null,
+      "kind": "fixed",
+      "locked": true
+    },
+    {
+      "start": "2026-10-15T14:00:00Z",
+      "end": "2026-10-15T15:15:00Z",
+      "block_id": "fixed-algorithms-midterm",
+      "task_id": null,
+      "kind": "fixed",
+      "locked": true
+    },
+    {
+      "start": "2026-10-13T05:00:00Z",
+      "end": "2026-10-13T12:00:00Z",
+      "block_id": "sleep-13",
+      "task_id": null,
+      "kind": "sleep_protected",
+      "locked": true
+    },
+    {
+      "start": "2026-10-14T05:00:00Z",
+      "end": "2026-10-14T12:00:00Z",
+      "block_id": "sleep-14",
+      "task_id": null,
+      "kind": "sleep_protected",
+      "locked": true
+    },
+    {
+      "start": "2026-10-15T05:00:00Z",
+      "end": "2026-10-15T12:00:00Z",
+      "block_id": "sleep-15",
+      "task_id": null,
+      "kind": "sleep_protected",
+      "locked": true
+    },
+    {
+      "start": "2026-10-13T12:00:00Z",
+      "end": "2026-10-13T12:45:00Z",
+      "block_id": "blk-stat-prep",
+      "task_id": "stat-exam-prep",
+      "kind": "study",
+      "locked": true
+    },
+    {
+      "start": "2026-10-13T03:30:00Z",
+      "end": "2026-10-13T05:00:00Z",
+      "block_id": "blk-alg-1",
+      "task_id": "algorithms-review",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-13T17:30:00Z",
+      "end": "2026-10-13T18:30:00Z",
+      "block_id": "blk-db-1",
+      "task_id": "db-assignment-3",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-13T18:45:00Z",
+      "end": "2026-10-13T19:45:00Z",
+      "block_id": "blk-db-1b",
+      "task_id": "db-assignment-3",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-14T12:30:00Z",
+      "end": "2026-10-14T13:30:00Z",
+      "block_id": "blk-writing-1",
+      "task_id": "writing-reflection",
+      "kind": "study",
+      "locked": false
+    }
+  ],
+  "unscheduled_work": [
+    {
+      "task_id": "thesis-draft",
+      "minutes": 480,
+      "deadline": "2026-10-13T20:00:00Z",
+      "reason": "NOT_YET_PLANNED"
+    }
+  ]
+}

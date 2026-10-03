@@ -1,0 +1,2 @@
+# frontend (part-time teammate)
+React + TypeScript + Vite + Tailwind + Recharts. Start against the mock API at http://localhost:8000 (`/api/state`, `/api/schedule`, `/api/events`). Generate TS types from `contracts/schema/*.json` (e.g. `npx json-schema-to-typescript`). Must show: source_kind/mode badge, load + recovery, trigger reasons, schedule before/after diff, agent explanation, Apply button, replay controls.

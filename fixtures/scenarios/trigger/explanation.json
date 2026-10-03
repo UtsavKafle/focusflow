@@ -1,0 +1,9 @@
+{
+  "text": "Fixture explanation. Over the last 20 minutes your estimated physiological load stayed high (above your own baseline), your estimated rest last night was about 3.5 of 8 target hours, and the STAT exam is under 10 hours away. I moved Algorithms review out of the 11:30 PM to 1:00 AM slot, protected that time for rest, and rescheduled it to 10:00 AM and 1:00 PM tomorrow, before its Wednesday deadline. Heuristic estimates from wearable signals; not a medical assessment.",
+  "evidence_ids": [
+    "window-0098",
+    "window-0120",
+    "rest-0002"
+  ],
+  "synthetic": true
+}

@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "calendar_version": 1,
+  "tasks_version": 3,
+  "timezone": "America/New_York",
+  "tasks": [
+    {
+      "task_id": "algorithms-review",
+      "title": "Algorithms review",
+      "remaining_minutes": 90,
+      "deadline": "2026-10-14T19:30:00Z",
+      "priority": 6,
+      "splittable": true,
+      "minimum_block_minutes": 30,
+      "status": "todo"
+    },
+    {
+      "task_id": "stat-exam-prep",
+      "title": "STAT exam preparation",
+      "remaining_minutes": 45,
+      "deadline": "2026-10-13T12:45:00Z",
+      "priority": 9,
+      "splittable": false,
+      "minimum_block_minutes": 45,
+      "status": "todo"
+    },
+    {
+      "task_id": "db-assignment-3",
+      "title": "Databases assignment 3",
+      "remaining_minutes": 120,
+      "deadline": "2026-10-15T04:00:00Z",
+      "priority": 5,
+      "splittable": true,
+      "minimum_block_minutes": 30,
+      "status": "todo"
+    },
+    {
+      "task_id": "writing-reflection",
+      "title": "Writing reflection",
+      "remaining_minutes": 60,
+      "deadline": "2026-10-15T04:00:00Z",
+      "priority": 3,
+      "splittable": true,
+      "minimum_block_minutes": 30,
+      "status": "todo"
+    },
+    {
+      "task_id": "thesis-draft",
+      "title": "Thesis draft",
+      "remaining_minutes": 480,
+      "deadline": "2026-10-13T20:00:00Z",
+      "priority": 9,
+      "splittable": true,
+      "minimum_block_minutes": 30,
+      "status": "todo"
+    }
+  ],
+  "fixed_events": [
+    {
+      "start": "2026-10-13T13:00:00Z",
+      "end": "2026-10-13T14:00:00Z",
+      "event_id": "stat-exam",
+      "title": "STAT exam",
+      "kind": "exam"
+    },
+    {
+      "start": "2026-10-13T15:45:00Z",
+      "end": "2026-10-13T17:00:00Z",
+      "event_id": "csc316-lecture",
+      "title": "CSC 316 lecture",
+      "kind": "class"
+    },
+    {
+      "start": "2026-10-14T18:00:00Z",
+      "end": "2026-10-14T18:30:00Z",
+      "event_id": "db-quiz",
+      "title": "DB quiz",
+      "kind": "quiz"
+    },
+    {
+      "start": "2026-10-15T14:00:00Z",
+      "end": "2026-10-15T15:15:00Z",
+      "event_id": "algorithms-midterm",
+      "title": "Algorithms midterm",
+      "kind": "exam"
+    }
+  ],
+  "allowed_study_intervals": [
+    {
+      "start": "2026-10-12T12:00:00Z",
+      "end": "2026-10-13T05:00:00Z"
+    },
+    {
+      "start": "2026-10-13T12:00:00Z",
+      "end": "2026-10-14T05:00:00Z"
+    },
+    {
+      "start": "2026-10-14T12:00:00Z",
+      "end": "2026-10-15T05:00:00Z"
+    }
+  ],
+  "protected_sleep_intervals": [
+    {
+      "start": "2026-10-13T05:00:00Z",
+      "end": "2026-10-13T12:00:00Z"
+    },
+    {
+      "start": "2026-10-14T05:00:00Z",
+      "end": "2026-10-14T12:00:00Z"
+    },
+    {
+      "start": "2026-10-15T05:00:00Z",
+      "end": "2026-10-15T12:00:00Z"
+    }
+  ],
+  "preferences": {
+    "minimum_sleep_minutes": 420,
+    "target_sleep_minutes": 480,
+    "minimum_study_block_minutes": 30,
+    "maximum_continuous_study_minutes": 90,
+    "break_minutes": 15
+  }
+}

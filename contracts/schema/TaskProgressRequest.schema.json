@@ -1,0 +1,20 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "completed_minutes": {
+      "exclusiveMinimum": 0,
+      "title": "Completed Minutes",
+      "type": "integer"
+    },
+    "expected_tasks_version": {
+      "title": "Expected Tasks Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "completed_minutes",
+    "expected_tasks_version"
+  ],
+  "title": "TaskProgressRequest",
+  "type": "object"
+}

@@ -1,0 +1,8 @@
+{
+  "scenario": "trigger",
+  "source_kind": "synthetic_fixture",
+  "run_id": "fixture-run-001",
+  "participant_id": "fixture-participant",
+  "as_of": "2026-10-13T03:20:00Z",
+  "label": "SYNTHETIC FIXTURE - not real wearable data"
+}

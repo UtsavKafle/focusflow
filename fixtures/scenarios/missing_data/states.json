@@ -1,0 +1,1028 @@
+[
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0001",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T01:50:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T01:49:00Z",
+      "window_end": "2026-10-13T01:50:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0030"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.84,
+      "hours_until_next_exam": 11.17,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0002",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T01:55:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T01:54:00Z",
+      "window_end": "2026-10-13T01:55:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0035"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.85,
+      "hours_until_next_exam": 11.08,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0003",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:00:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T01:59:00Z",
+      "window_end": "2026-10-13T02:00:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0040"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.85,
+      "hours_until_next_exam": 11.0,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0004",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:05:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:04:00Z",
+      "window_end": "2026-10-13T02:05:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0045"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.85,
+      "hours_until_next_exam": 10.92,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0005",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:10:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:09:00Z",
+      "window_end": "2026-10-13T02:10:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0050"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.85,
+      "hours_until_next_exam": 10.83,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0006",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:15:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:14:00Z",
+      "window_end": "2026-10-13T02:15:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0055"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.85,
+      "hours_until_next_exam": 10.75,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0007",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:20:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:19:00Z",
+      "window_end": "2026-10-13T02:20:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0060"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.85,
+      "hours_until_next_exam": 10.67,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0008",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:25:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:24:00Z",
+      "window_end": "2026-10-13T02:25:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0065"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.85,
+      "hours_until_next_exam": 10.58,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0009",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:30:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:29:00Z",
+      "window_end": "2026-10-13T02:30:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0070"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.85,
+      "hours_until_next_exam": 10.5,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0010",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:35:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:34:00Z",
+      "window_end": "2026-10-13T02:35:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0075"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 10.42,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0011",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:40:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:39:00Z",
+      "window_end": "2026-10-13T02:40:00Z",
+      "heart_rate_bpm": 77.5,
+      "physiological_load": 0.5,
+      "activity_level": 0.08,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "sufficient",
+        "hr_coverage": 0.98,
+        "eda_coverage": 0.96,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0080"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 10.33,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0012",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:45:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:44:00Z",
+      "window_end": "2026-10-13T02:45:00Z",
+      "heart_rate_bpm": null,
+      "physiological_load": null,
+      "activity_level": null,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "unavailable",
+        "hr_coverage": 0.31,
+        "eda_coverage": 0.3,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "physiological_load": "hr_coverage_below_threshold",
+          "heart_rate_bpm": "no_valid_hr_in_window",
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable",
+          "activity_level": "acc_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0085"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 10.25,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": []
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0013",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:50:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:49:00Z",
+      "window_end": "2026-10-13T02:50:00Z",
+      "heart_rate_bpm": null,
+      "physiological_load": null,
+      "activity_level": null,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "unavailable",
+        "hr_coverage": 0.31,
+        "eda_coverage": 0.3,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "physiological_load": "hr_coverage_below_threshold",
+          "heart_rate_bpm": "no_valid_hr_in_window",
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable",
+          "activity_level": "acc_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0090"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 10.17,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": [
+        "INSUFFICIENT_DATA"
+      ]
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0014",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T02:55:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:54:00Z",
+      "window_end": "2026-10-13T02:55:00Z",
+      "heart_rate_bpm": null,
+      "physiological_load": null,
+      "activity_level": null,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "unavailable",
+        "hr_coverage": 0.31,
+        "eda_coverage": 0.3,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "physiological_load": "hr_coverage_below_threshold",
+          "heart_rate_bpm": "no_valid_hr_in_window",
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable",
+          "activity_level": "acc_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0095"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 10.08,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": [
+        "INSUFFICIENT_DATA"
+      ]
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0015",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T03:00:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T02:59:00Z",
+      "window_end": "2026-10-13T03:00:00Z",
+      "heart_rate_bpm": null,
+      "physiological_load": null,
+      "activity_level": null,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "unavailable",
+        "hr_coverage": 0.31,
+        "eda_coverage": 0.3,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "physiological_load": "hr_coverage_below_threshold",
+          "heart_rate_bpm": "no_valid_hr_in_window",
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable",
+          "activity_level": "acc_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0100"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 10.0,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": [
+        "INSUFFICIENT_DATA"
+      ]
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0016",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T03:05:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T03:04:00Z",
+      "window_end": "2026-10-13T03:05:00Z",
+      "heart_rate_bpm": null,
+      "physiological_load": null,
+      "activity_level": null,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "unavailable",
+        "hr_coverage": 0.31,
+        "eda_coverage": 0.3,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "physiological_load": "hr_coverage_below_threshold",
+          "heart_rate_bpm": "no_valid_hr_in_window",
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable",
+          "activity_level": "acc_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0105"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 9.92,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": [
+        "INSUFFICIENT_DATA"
+      ]
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0017",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T03:10:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T03:09:00Z",
+      "window_end": "2026-10-13T03:10:00Z",
+      "heart_rate_bpm": null,
+      "physiological_load": null,
+      "activity_level": null,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "unavailable",
+        "hr_coverage": 0.31,
+        "eda_coverage": 0.3,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "physiological_load": "hr_coverage_below_threshold",
+          "heart_rate_bpm": "no_valid_hr_in_window",
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable",
+          "activity_level": "acc_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0110"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 9.83,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": [
+        "INSUFFICIENT_DATA"
+      ]
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0018",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T03:15:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T03:14:00Z",
+      "window_end": "2026-10-13T03:15:00Z",
+      "heart_rate_bpm": null,
+      "physiological_load": null,
+      "activity_level": null,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "unavailable",
+        "hr_coverage": 0.31,
+        "eda_coverage": 0.3,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "physiological_load": "hr_coverage_below_threshold",
+          "heart_rate_bpm": "no_valid_hr_in_window",
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable",
+          "activity_level": "acc_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0115"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.86,
+      "hours_until_next_exam": 9.75,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": [
+        "INSUFFICIENT_DATA"
+      ]
+    }
+  },
+  {
+    "schema_version": "1.0",
+    "state_id": "state-0019",
+    "run_id": "fixture-run-001",
+    "participant_id": "fixture-participant",
+    "as_of": "2026-10-13T03:20:00Z",
+    "scenario_timezone": "America/New_York",
+    "source_kind": "synthetic_fixture",
+    "wearable": {
+      "window_start": "2026-10-13T03:19:00Z",
+      "window_end": "2026-10-13T03:20:00Z",
+      "heart_rate_bpm": null,
+      "physiological_load": null,
+      "activity_level": null,
+      "estimated_rest_minutes": null,
+      "target_rest_minutes": 480,
+      "recovery_score": null,
+      "quality": {
+        "status": "unavailable",
+        "hr_coverage": 0.31,
+        "eda_coverage": 0.3,
+        "acc_coverage": 0.99,
+        "overnight_coverage": 0.2,
+        "missing_reasons": {
+          "physiological_load": "hr_coverage_below_threshold",
+          "heart_rate_bpm": "no_valid_hr_in_window",
+          "estimated_rest_minutes": "overnight_coverage_below_minimum",
+          "recovery_score": "estimated_rest_unavailable",
+          "activity_level": "acc_unavailable"
+        }
+      },
+      "baseline_id": "baseline-01",
+      "baseline_cutoff": "2026-10-12T00:00:00Z",
+      "evidence_ids": [
+        "window-0120"
+      ]
+    },
+    "academic": {
+      "calendar_version": 1,
+      "tasks_version": 3,
+      "schedule_version": 2,
+      "deadline_pressure": 0.87,
+      "hours_until_next_exam": 9.67,
+      "remaining_work_minutes": 315,
+      "overdue_task_ids": []
+    },
+    "trigger": {
+      "replan_recommended": false,
+      "reason_codes": [
+        "HIGH_PRESSURE"
+      ],
+      "rule_version": "demo-rules-1",
+      "suppressed_reason_codes": [
+        "INSUFFICIENT_DATA"
+      ]
+    }
+  }
+]

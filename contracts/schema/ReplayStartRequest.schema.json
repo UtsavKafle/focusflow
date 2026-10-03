@@ -1,0 +1,33 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "bookmark": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Bookmark"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "speed": {
+      "default": 1.0,
+      "exclusiveMinimum": 0,
+      "title": "Speed",
+      "type": "number"
+    }
+  },
+  "required": [
+    "scenario_id"
+  ],
+  "title": "ReplayStartRequest",
+  "type": "object"
+}

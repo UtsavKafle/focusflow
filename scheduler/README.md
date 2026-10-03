@@ -1,0 +1,4 @@
+# scheduler (Integrator)
+Pure Python. `optimize.py` = interface stub; `validate.py` = DONE and tested (overlap, allowed intervals, sleep, deadlines, minute accounting, min block, max continuous).
+Algorithm (M1): sort tasks by (deadline, -priority, task_id); place into free allowed intervals earliest-first, splitting by `minimum_block_minutes`/`maximum_continuous_study_minutes`, never touching fixed events, protected sleep or locked blocks. When trigger says protect rest, add a `sleep_extension` block ending at the next protected sleep and re-place displaced study. Anything unplaceable -> `unscheduled_work`, status `partial`. Always run `validate_proposal` before returning.
+Target: reproduce `fixtures/scenarios/trigger/proposal.json` and `infeasible/proposal.json` from their calendars (golden tests).

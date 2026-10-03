@@ -1,0 +1,222 @@
+{
+  "$defs": {
+    "FixedEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "format": "date-time",
+          "title": "End",
+          "type": "string"
+        },
+        "event_id": {
+          "title": "Event Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "exam",
+            "class",
+            "quiz",
+            "other"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "start": {
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "event_id",
+        "title",
+        "kind"
+      ],
+      "title": "FixedEvent",
+      "type": "object"
+    },
+    "Interval": {
+      "additionalProperties": false,
+      "description": "Half-open [start, end).",
+      "properties": {
+        "end": {
+          "format": "date-time",
+          "title": "End",
+          "type": "string"
+        },
+        "start": {
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "Interval",
+      "type": "object"
+    },
+    "Preferences": {
+      "additionalProperties": false,
+      "properties": {
+        "break_minutes": {
+          "default": 15,
+          "title": "Break Minutes",
+          "type": "integer"
+        },
+        "maximum_continuous_study_minutes": {
+          "default": 90,
+          "title": "Maximum Continuous Study Minutes",
+          "type": "integer"
+        },
+        "minimum_sleep_minutes": {
+          "default": 420,
+          "title": "Minimum Sleep Minutes",
+          "type": "integer"
+        },
+        "minimum_study_block_minutes": {
+          "default": 30,
+          "title": "Minimum Study Block Minutes",
+          "type": "integer"
+        },
+        "target_sleep_minutes": {
+          "default": 480,
+          "title": "Target Sleep Minutes",
+          "type": "integer"
+        }
+      },
+      "title": "Preferences",
+      "type": "object"
+    },
+    "Task": {
+      "additionalProperties": false,
+      "properties": {
+        "deadline": {
+          "format": "date-time",
+          "title": "Deadline",
+          "type": "string"
+        },
+        "minimum_block_minutes": {
+          "default": 30,
+          "exclusiveMinimum": 0,
+          "title": "Minimum Block Minutes",
+          "type": "integer"
+        },
+        "priority": {
+          "maximum": 10,
+          "minimum": 1,
+          "title": "Priority",
+          "type": "integer"
+        },
+        "remaining_minutes": {
+          "minimum": 0,
+          "title": "Remaining Minutes",
+          "type": "integer"
+        },
+        "splittable": {
+          "default": true,
+          "title": "Splittable",
+          "type": "boolean"
+        },
+        "status": {
+          "default": "todo",
+          "enum": [
+            "todo",
+            "in_progress",
+            "done"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "title",
+        "remaining_minutes",
+        "deadline",
+        "priority"
+      ],
+      "title": "Task",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "allowed_study_intervals": {
+      "items": {
+        "$ref": "#/$defs/Interval"
+      },
+      "title": "Allowed Study Intervals",
+      "type": "array"
+    },
+    "calendar_version": {
+      "title": "Calendar Version",
+      "type": "integer"
+    },
+    "fixed_events": {
+      "items": {
+        "$ref": "#/$defs/FixedEvent"
+      },
+      "title": "Fixed Events",
+      "type": "array"
+    },
+    "preferences": {
+      "$ref": "#/$defs/Preferences"
+    },
+    "protected_sleep_intervals": {
+      "items": {
+        "$ref": "#/$defs/Interval"
+      },
+      "title": "Protected Sleep Intervals",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tasks": {
+      "items": {
+        "$ref": "#/$defs/Task"
+      },
+      "title": "Tasks",
+      "type": "array"
+    },
+    "tasks_version": {
+      "title": "Tasks Version",
+      "type": "integer"
+    },
+    "timezone": {
+      "title": "Timezone",
+      "type": "string"
+    }
+  },
+  "required": [
+    "calendar_version",
+    "tasks_version",
+    "timezone",
+    "tasks",
+    "fixed_events",
+    "allowed_study_intervals",
+    "protected_sleep_intervals"
+  ],
+  "title": "CalendarBundle",
+  "type": "object"
+}

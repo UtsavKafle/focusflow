@@ -1,0 +1,14 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_schedule_version": {
+      "title": "Expected Schedule Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "expected_schedule_version"
+  ],
+  "title": "ApplyRequest",
+  "type": "object"
+}

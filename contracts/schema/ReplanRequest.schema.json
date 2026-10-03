@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "calendar_version": {
+      "title": "Calendar Version",
+      "type": "integer"
+    },
+    "reason_codes": {
+      "items": {
+        "enum": [
+          "SUSTAINED_LOAD",
+          "LIMITED_ESTIMATED_REST",
+          "HIGH_PRESSURE"
+        ],
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Reason Codes",
+      "type": "array"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schedule_version": {
+      "title": "Schedule Version",
+      "type": "integer"
+    },
+    "state_id": {
+      "title": "State Id",
+      "type": "string"
+    },
+    "tasks_version": {
+      "title": "Tasks Version",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "run_id",
+    "state_id",
+    "schedule_version",
+    "calendar_version",
+    "tasks_version",
+    "reason_codes"
+  ],
+  "title": "ReplanRequest",
+  "type": "object"
+}

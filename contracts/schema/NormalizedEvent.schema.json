@@ -1,0 +1,95 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_time": {
+      "format": "date-time",
+      "title": "Event Time",
+      "type": "string"
+    },
+    "ingested_at": {
+      "format": "date-time",
+      "title": "Ingested At",
+      "type": "string"
+    },
+    "participant_id": {
+      "title": "Participant Id",
+      "type": "string"
+    },
+    "quality": {
+      "default": "valid",
+      "enum": [
+        "valid",
+        "flagged",
+        "dropped"
+      ],
+      "title": "Quality",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signal": {
+      "enum": [
+        "hr",
+        "eda",
+        "temp",
+        "acc",
+        "bvp",
+        "ibi",
+        "glucose"
+      ],
+      "title": "Signal",
+      "type": "string"
+    },
+    "source_kind": {
+      "enum": [
+        "recorded_replay",
+        "synthetic_fixture",
+        "synthetic_injection"
+      ],
+      "title": "Source Kind",
+      "type": "string"
+    },
+    "source_timestamp": {
+      "format": "date-time",
+      "title": "Source Timestamp",
+      "type": "string"
+    },
+    "unit": {
+      "title": "Unit",
+      "type": "string"
+    },
+    "values": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Values",
+      "type": "object"
+    }
+  },
+  "required": [
+    "run_id",
+    "event_id",
+    "participant_id",
+    "source_kind",
+    "source_timestamp",
+    "event_time",
+    "ingested_at",
+    "signal",
+    "values",
+    "unit"
+  ],
+  "title": "NormalizedEvent",
+  "type": "object"
+}

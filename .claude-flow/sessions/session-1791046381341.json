@@ -1,0 +1,14 @@
+{
+  "id": "session-1791046381341",
+  "startedAt": "2026-10-03T16:53:01.341Z",
+  "cwd": "/Users/utsavkafle/Desktop/focusflow",
+  "context": {},
+  "metrics": {
+    "edits": 0,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-10-03T17:01:16.303Z",
+  "duration": 494965
+}

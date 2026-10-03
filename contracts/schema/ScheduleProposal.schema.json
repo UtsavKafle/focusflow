@@ -1,0 +1,238 @@
+{
+  "$defs": {
+    "ScheduleBlock": {
+      "additionalProperties": false,
+      "properties": {
+        "block_id": {
+          "title": "Block Id",
+          "type": "string"
+        },
+        "end": {
+          "format": "date-time",
+          "title": "End",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "study",
+            "fixed",
+            "sleep_protected",
+            "sleep_extension",
+            "break"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "locked": {
+          "default": false,
+          "title": "Locked",
+          "type": "boolean"
+        },
+        "start": {
+          "format": "date-time",
+          "title": "Start",
+          "type": "string"
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Task Id"
+        }
+      },
+      "required": [
+        "start",
+        "end",
+        "block_id",
+        "kind"
+      ],
+      "title": "ScheduleBlock",
+      "type": "object"
+    },
+    "ScheduleChange": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "moved",
+            "added",
+            "removed",
+            "shortened",
+            "extended"
+          ],
+          "title": "Action",
+          "type": "string"
+        },
+        "change_id": {
+          "title": "Change Id",
+          "type": "string"
+        },
+        "new_block_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "New Block Ids",
+          "type": "array"
+        },
+        "old_block_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Old Block Ids",
+          "type": "array"
+        },
+        "reason_code": {
+          "title": "Reason Code",
+          "type": "string"
+        }
+      },
+      "required": [
+        "change_id",
+        "action",
+        "reason_code"
+      ],
+      "title": "ScheduleChange",
+      "type": "object"
+    },
+    "UnscheduledWork": {
+      "additionalProperties": false,
+      "properties": {
+        "deadline": {
+          "format": "date-time",
+          "title": "Deadline",
+          "type": "string"
+        },
+        "minutes": {
+          "exclusiveMinimum": 0,
+          "title": "Minutes",
+          "type": "integer"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        },
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "minutes",
+        "deadline",
+        "reason"
+      ],
+      "title": "UnscheduledWork",
+      "type": "object"
+    },
+    "ValidationReport": {
+      "additionalProperties": false,
+      "properties": {
+        "checks": {
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "title": "Checks",
+          "type": "object"
+        },
+        "messages": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Messages",
+          "type": "array"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "passed",
+        "checks"
+      ],
+      "title": "ValidationReport",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "based_on_state_id": {
+      "title": "Based On State Id",
+      "type": "string"
+    },
+    "blocks": {
+      "items": {
+        "$ref": "#/$defs/ScheduleBlock"
+      },
+      "title": "Blocks",
+      "type": "array"
+    },
+    "calendar_version": {
+      "title": "Calendar Version",
+      "type": "integer"
+    },
+    "changes": {
+      "items": {
+        "$ref": "#/$defs/ScheduleChange"
+      },
+      "title": "Changes",
+      "type": "array"
+    },
+    "proposal_id": {
+      "title": "Proposal Id",
+      "type": "string"
+    },
+    "schedule_version": {
+      "title": "Schedule Version",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "feasible",
+        "partial",
+        "infeasible"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "tasks_version": {
+      "title": "Tasks Version",
+      "type": "integer"
+    },
+    "unscheduled_work": {
+      "items": {
+        "$ref": "#/$defs/UnscheduledWork"
+      },
+      "title": "Unscheduled Work",
+      "type": "array"
+    },
+    "validation": {
+      "$ref": "#/$defs/ValidationReport"
+    }
+  },
+  "required": [
+    "proposal_id",
+    "based_on_state_id",
+    "calendar_version",
+    "tasks_version",
+    "schedule_version",
+    "status",
+    "blocks",
+    "validation"
+  ],
+  "title": "ScheduleProposal",
+  "type": "object"
+}

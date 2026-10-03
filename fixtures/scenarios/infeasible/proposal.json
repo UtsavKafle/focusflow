@@ -1,0 +1,217 @@
+{
+  "schema_version": "1.0",
+  "proposal_id": "proposal-infeasible-001",
+  "based_on_state_id": "state-0019",
+  "calendar_version": 1,
+  "tasks_version": 3,
+  "schedule_version": 2,
+  "status": "partial",
+  "blocks": [
+    {
+      "start": "2026-10-13T13:00:00Z",
+      "end": "2026-10-13T14:00:00Z",
+      "block_id": "fixed-stat-exam",
+      "task_id": null,
+      "kind": "fixed",
+      "locked": true
+    },
+    {
+      "start": "2026-10-13T15:45:00Z",
+      "end": "2026-10-13T17:00:00Z",
+      "block_id": "fixed-csc316-lecture",
+      "task_id": null,
+      "kind": "fixed",
+      "locked": true
+    },
+    {
+      "start": "2026-10-14T18:00:00Z",
+      "end": "2026-10-14T18:30:00Z",
+      "block_id": "fixed-db-quiz",
+      "task_id": null,
+      "kind": "fixed",
+      "locked": true
+    },
+    {
+      "start": "2026-10-15T14:00:00Z",
+      "end": "2026-10-15T15:15:00Z",
+      "block_id": "fixed-algorithms-midterm",
+      "task_id": null,
+      "kind": "fixed",
+      "locked": true
+    },
+    {
+      "start": "2026-10-13T05:00:00Z",
+      "end": "2026-10-13T12:00:00Z",
+      "block_id": "sleep-13",
+      "task_id": null,
+      "kind": "sleep_protected",
+      "locked": true
+    },
+    {
+      "start": "2026-10-14T05:00:00Z",
+      "end": "2026-10-14T12:00:00Z",
+      "block_id": "sleep-14",
+      "task_id": null,
+      "kind": "sleep_protected",
+      "locked": true
+    },
+    {
+      "start": "2026-10-15T05:00:00Z",
+      "end": "2026-10-15T12:00:00Z",
+      "block_id": "sleep-15",
+      "task_id": null,
+      "kind": "sleep_protected",
+      "locked": true
+    },
+    {
+      "start": "2026-10-13T12:00:00Z",
+      "end": "2026-10-13T12:45:00Z",
+      "block_id": "blk-stat-prep",
+      "task_id": "stat-exam-prep",
+      "kind": "study",
+      "locked": true
+    },
+    {
+      "start": "2026-10-13T14:00:00Z",
+      "end": "2026-10-13T15:30:00Z",
+      "block_id": "blk-thesis-1",
+      "task_id": "thesis-draft",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-13T17:00:00Z",
+      "end": "2026-10-13T18:30:00Z",
+      "block_id": "blk-thesis-2",
+      "task_id": "thesis-draft",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-13T18:45:00Z",
+      "end": "2026-10-13T19:45:00Z",
+      "block_id": "blk-thesis-3",
+      "task_id": "thesis-draft",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-14T12:00:00Z",
+      "end": "2026-10-14T13:30:00Z",
+      "block_id": "blk-alg-2",
+      "task_id": "algorithms-review",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-14T14:00:00Z",
+      "end": "2026-10-14T15:00:00Z",
+      "block_id": "blk-db-2",
+      "task_id": "db-assignment-3",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-14T15:15:00Z",
+      "end": "2026-10-14T16:15:00Z",
+      "block_id": "blk-db-2b",
+      "task_id": "db-assignment-3",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-14T16:30:00Z",
+      "end": "2026-10-14T17:30:00Z",
+      "block_id": "blk-writing-2",
+      "task_id": "writing-reflection",
+      "kind": "study",
+      "locked": false
+    },
+    {
+      "start": "2026-10-13T03:30:00Z",
+      "end": "2026-10-13T05:00:00Z",
+      "block_id": "blk-sleep-ext-1",
+      "task_id": null,
+      "kind": "sleep_extension",
+      "locked": true
+    }
+  ],
+  "changes": [
+    {
+      "change_id": "chg-1",
+      "action": "added",
+      "old_block_ids": [],
+      "new_block_ids": [
+        "blk-sleep-ext-1"
+      ],
+      "reason_code": "PROTECT_REST"
+    },
+    {
+      "change_id": "chg-2",
+      "action": "moved",
+      "old_block_ids": [
+        "blk-alg-1"
+      ],
+      "new_block_ids": [
+        "blk-alg-2"
+      ],
+      "reason_code": "PROTECT_REST"
+    },
+    {
+      "change_id": "chg-3",
+      "action": "moved",
+      "old_block_ids": [
+        "blk-db-1",
+        "blk-db-1b"
+      ],
+      "new_block_ids": [
+        "blk-db-2",
+        "blk-db-2b"
+      ],
+      "reason_code": "MAKE_ROOM"
+    },
+    {
+      "change_id": "chg-4",
+      "action": "added",
+      "old_block_ids": [],
+      "new_block_ids": [
+        "blk-thesis-1",
+        "blk-thesis-2",
+        "blk-thesis-3"
+      ],
+      "reason_code": "MAKE_ROOM"
+    },
+    {
+      "change_id": "chg-5",
+      "action": "moved",
+      "old_block_ids": [
+        "blk-writing-1"
+      ],
+      "new_block_ids": [
+        "blk-writing-2"
+      ],
+      "reason_code": "MAKE_ROOM"
+    }
+  ],
+  "unscheduled_work": [
+    {
+      "task_id": "thesis-draft",
+      "minutes": 240,
+      "deadline": "2026-10-13T20:00:00Z",
+      "reason": "INSUFFICIENT_CAPACITY_BEFORE_DEADLINE"
+    }
+  ],
+  "validation": {
+    "passed": true,
+    "checks": {
+      "no_overlap": true,
+      "within_allowed_intervals": true,
+      "deadlines_met": true,
+      "minutes_conserved": true,
+      "min_block_size": true,
+      "max_continuous": true,
+      "protected_sleep_respected": true
+    },
+    "messages": []
+  }
+}

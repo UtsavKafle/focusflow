@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "event_id": {
+      "title": "Event Id",
+      "type": "string"
+    },
+    "event_time": {
+      "format": "date-time",
+      "title": "Event Time",
+      "type": "string"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "sequence": {
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "type": {
+      "enum": [
+        "state.updated",
+        "replay.updated",
+        "agent.started",
+        "agent.tool_result",
+        "schedule.proposed",
+        "schedule.applied",
+        "agent.explanation",
+        "pipeline.error"
+      ],
+      "title": "Type",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id",
+    "sequence",
+    "run_id",
+    "event_time",
+    "type",
+    "payload"
+  ],
+  "title": "SSEEvent",
+  "type": "object"
+}

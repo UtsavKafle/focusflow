@@ -1,0 +1,2 @@
+# agent (Integrator)
+Tool spec: `contracts/agent_tools.json`; interface: `tools.py`. Agent may only request replans with permitted reason codes; the API commits. Explanations must cite evidence IDs and carry the heuristic/non-medical caveat. Model: Databricks endpoint if confirmed, else `LLM_API_KEY` fallback; tool loop must also work with a scripted "no-LLM" explanation from fixtures for demo resilience.

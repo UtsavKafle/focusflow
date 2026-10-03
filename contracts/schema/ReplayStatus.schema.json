@@ -1,0 +1,84 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "lag_seconds": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Lag Seconds"
+    },
+    "mode": {
+      "enum": [
+        "live_databricks",
+        "saved_replay",
+        "synthetic_fixture"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "processed_time": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Processed Time"
+    },
+    "published_time": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Published Time"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Run Id"
+    },
+    "speed": {
+      "default": 1.0,
+      "title": "Speed",
+      "type": "number"
+    },
+    "state": {
+      "enum": [
+        "idle",
+        "running",
+        "paused"
+      ],
+      "title": "State",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "mode",
+    "state"
+  ],
+  "title": "ReplayStatus",
+  "type": "object"
+}

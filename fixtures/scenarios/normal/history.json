@@ -1,0 +1,1091 @@
+[
+  {
+    "window_start": "2026-10-13T01:19:00Z",
+    "window_end": "2026-10-13T01:20:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0000"
+  },
+  {
+    "window_start": "2026-10-13T01:20:00Z",
+    "window_end": "2026-10-13T01:21:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0001"
+  },
+  {
+    "window_start": "2026-10-13T01:21:00Z",
+    "window_end": "2026-10-13T01:22:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0002"
+  },
+  {
+    "window_start": "2026-10-13T01:22:00Z",
+    "window_end": "2026-10-13T01:23:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0003"
+  },
+  {
+    "window_start": "2026-10-13T01:23:00Z",
+    "window_end": "2026-10-13T01:24:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0004"
+  },
+  {
+    "window_start": "2026-10-13T01:24:00Z",
+    "window_end": "2026-10-13T01:25:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0005"
+  },
+  {
+    "window_start": "2026-10-13T01:25:00Z",
+    "window_end": "2026-10-13T01:26:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0006"
+  },
+  {
+    "window_start": "2026-10-13T01:26:00Z",
+    "window_end": "2026-10-13T01:27:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0007"
+  },
+  {
+    "window_start": "2026-10-13T01:27:00Z",
+    "window_end": "2026-10-13T01:28:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0008"
+  },
+  {
+    "window_start": "2026-10-13T01:28:00Z",
+    "window_end": "2026-10-13T01:29:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0009"
+  },
+  {
+    "window_start": "2026-10-13T01:29:00Z",
+    "window_end": "2026-10-13T01:30:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0010"
+  },
+  {
+    "window_start": "2026-10-13T01:30:00Z",
+    "window_end": "2026-10-13T01:31:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0011"
+  },
+  {
+    "window_start": "2026-10-13T01:31:00Z",
+    "window_end": "2026-10-13T01:32:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0012"
+  },
+  {
+    "window_start": "2026-10-13T01:32:00Z",
+    "window_end": "2026-10-13T01:33:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0013"
+  },
+  {
+    "window_start": "2026-10-13T01:33:00Z",
+    "window_end": "2026-10-13T01:34:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0014"
+  },
+  {
+    "window_start": "2026-10-13T01:34:00Z",
+    "window_end": "2026-10-13T01:35:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0015"
+  },
+  {
+    "window_start": "2026-10-13T01:35:00Z",
+    "window_end": "2026-10-13T01:36:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0016"
+  },
+  {
+    "window_start": "2026-10-13T01:36:00Z",
+    "window_end": "2026-10-13T01:37:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0017"
+  },
+  {
+    "window_start": "2026-10-13T01:37:00Z",
+    "window_end": "2026-10-13T01:38:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0018"
+  },
+  {
+    "window_start": "2026-10-13T01:38:00Z",
+    "window_end": "2026-10-13T01:39:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0019"
+  },
+  {
+    "window_start": "2026-10-13T01:39:00Z",
+    "window_end": "2026-10-13T01:40:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0020"
+  },
+  {
+    "window_start": "2026-10-13T01:40:00Z",
+    "window_end": "2026-10-13T01:41:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0021"
+  },
+  {
+    "window_start": "2026-10-13T01:41:00Z",
+    "window_end": "2026-10-13T01:42:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0022"
+  },
+  {
+    "window_start": "2026-10-13T01:42:00Z",
+    "window_end": "2026-10-13T01:43:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0023"
+  },
+  {
+    "window_start": "2026-10-13T01:43:00Z",
+    "window_end": "2026-10-13T01:44:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0024"
+  },
+  {
+    "window_start": "2026-10-13T01:44:00Z",
+    "window_end": "2026-10-13T01:45:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0025"
+  },
+  {
+    "window_start": "2026-10-13T01:45:00Z",
+    "window_end": "2026-10-13T01:46:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0026"
+  },
+  {
+    "window_start": "2026-10-13T01:46:00Z",
+    "window_end": "2026-10-13T01:47:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0027"
+  },
+  {
+    "window_start": "2026-10-13T01:47:00Z",
+    "window_end": "2026-10-13T01:48:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0028"
+  },
+  {
+    "window_start": "2026-10-13T01:48:00Z",
+    "window_end": "2026-10-13T01:49:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0029"
+  },
+  {
+    "window_start": "2026-10-13T01:49:00Z",
+    "window_end": "2026-10-13T01:50:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0030"
+  },
+  {
+    "window_start": "2026-10-13T01:50:00Z",
+    "window_end": "2026-10-13T01:51:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0031"
+  },
+  {
+    "window_start": "2026-10-13T01:51:00Z",
+    "window_end": "2026-10-13T01:52:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0032"
+  },
+  {
+    "window_start": "2026-10-13T01:52:00Z",
+    "window_end": "2026-10-13T01:53:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0033"
+  },
+  {
+    "window_start": "2026-10-13T01:53:00Z",
+    "window_end": "2026-10-13T01:54:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0034"
+  },
+  {
+    "window_start": "2026-10-13T01:54:00Z",
+    "window_end": "2026-10-13T01:55:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0035"
+  },
+  {
+    "window_start": "2026-10-13T01:55:00Z",
+    "window_end": "2026-10-13T01:56:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0036"
+  },
+  {
+    "window_start": "2026-10-13T01:56:00Z",
+    "window_end": "2026-10-13T01:57:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0037"
+  },
+  {
+    "window_start": "2026-10-13T01:57:00Z",
+    "window_end": "2026-10-13T01:58:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0038"
+  },
+  {
+    "window_start": "2026-10-13T01:58:00Z",
+    "window_end": "2026-10-13T01:59:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0039"
+  },
+  {
+    "window_start": "2026-10-13T01:59:00Z",
+    "window_end": "2026-10-13T02:00:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0040"
+  },
+  {
+    "window_start": "2026-10-13T02:00:00Z",
+    "window_end": "2026-10-13T02:01:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0041"
+  },
+  {
+    "window_start": "2026-10-13T02:01:00Z",
+    "window_end": "2026-10-13T02:02:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0042"
+  },
+  {
+    "window_start": "2026-10-13T02:02:00Z",
+    "window_end": "2026-10-13T02:03:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0043"
+  },
+  {
+    "window_start": "2026-10-13T02:03:00Z",
+    "window_end": "2026-10-13T02:04:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0044"
+  },
+  {
+    "window_start": "2026-10-13T02:04:00Z",
+    "window_end": "2026-10-13T02:05:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0045"
+  },
+  {
+    "window_start": "2026-10-13T02:05:00Z",
+    "window_end": "2026-10-13T02:06:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0046"
+  },
+  {
+    "window_start": "2026-10-13T02:06:00Z",
+    "window_end": "2026-10-13T02:07:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0047"
+  },
+  {
+    "window_start": "2026-10-13T02:07:00Z",
+    "window_end": "2026-10-13T02:08:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0048"
+  },
+  {
+    "window_start": "2026-10-13T02:08:00Z",
+    "window_end": "2026-10-13T02:09:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0049"
+  },
+  {
+    "window_start": "2026-10-13T02:09:00Z",
+    "window_end": "2026-10-13T02:10:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0050"
+  },
+  {
+    "window_start": "2026-10-13T02:10:00Z",
+    "window_end": "2026-10-13T02:11:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0051"
+  },
+  {
+    "window_start": "2026-10-13T02:11:00Z",
+    "window_end": "2026-10-13T02:12:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0052"
+  },
+  {
+    "window_start": "2026-10-13T02:12:00Z",
+    "window_end": "2026-10-13T02:13:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0053"
+  },
+  {
+    "window_start": "2026-10-13T02:13:00Z",
+    "window_end": "2026-10-13T02:14:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0054"
+  },
+  {
+    "window_start": "2026-10-13T02:14:00Z",
+    "window_end": "2026-10-13T02:15:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0055"
+  },
+  {
+    "window_start": "2026-10-13T02:15:00Z",
+    "window_end": "2026-10-13T02:16:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0056"
+  },
+  {
+    "window_start": "2026-10-13T02:16:00Z",
+    "window_end": "2026-10-13T02:17:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0057"
+  },
+  {
+    "window_start": "2026-10-13T02:17:00Z",
+    "window_end": "2026-10-13T02:18:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0058"
+  },
+  {
+    "window_start": "2026-10-13T02:18:00Z",
+    "window_end": "2026-10-13T02:19:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0059"
+  },
+  {
+    "window_start": "2026-10-13T02:19:00Z",
+    "window_end": "2026-10-13T02:20:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0060"
+  },
+  {
+    "window_start": "2026-10-13T02:20:00Z",
+    "window_end": "2026-10-13T02:21:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0061"
+  },
+  {
+    "window_start": "2026-10-13T02:21:00Z",
+    "window_end": "2026-10-13T02:22:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0062"
+  },
+  {
+    "window_start": "2026-10-13T02:22:00Z",
+    "window_end": "2026-10-13T02:23:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0063"
+  },
+  {
+    "window_start": "2026-10-13T02:23:00Z",
+    "window_end": "2026-10-13T02:24:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0064"
+  },
+  {
+    "window_start": "2026-10-13T02:24:00Z",
+    "window_end": "2026-10-13T02:25:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0065"
+  },
+  {
+    "window_start": "2026-10-13T02:25:00Z",
+    "window_end": "2026-10-13T02:26:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0066"
+  },
+  {
+    "window_start": "2026-10-13T02:26:00Z",
+    "window_end": "2026-10-13T02:27:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0067"
+  },
+  {
+    "window_start": "2026-10-13T02:27:00Z",
+    "window_end": "2026-10-13T02:28:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0068"
+  },
+  {
+    "window_start": "2026-10-13T02:28:00Z",
+    "window_end": "2026-10-13T02:29:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0069"
+  },
+  {
+    "window_start": "2026-10-13T02:29:00Z",
+    "window_end": "2026-10-13T02:30:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0070"
+  },
+  {
+    "window_start": "2026-10-13T02:30:00Z",
+    "window_end": "2026-10-13T02:31:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0071"
+  },
+  {
+    "window_start": "2026-10-13T02:31:00Z",
+    "window_end": "2026-10-13T02:32:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0072"
+  },
+  {
+    "window_start": "2026-10-13T02:32:00Z",
+    "window_end": "2026-10-13T02:33:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0073"
+  },
+  {
+    "window_start": "2026-10-13T02:33:00Z",
+    "window_end": "2026-10-13T02:34:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0074"
+  },
+  {
+    "window_start": "2026-10-13T02:34:00Z",
+    "window_end": "2026-10-13T02:35:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0075"
+  },
+  {
+    "window_start": "2026-10-13T02:35:00Z",
+    "window_end": "2026-10-13T02:36:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0076"
+  },
+  {
+    "window_start": "2026-10-13T02:36:00Z",
+    "window_end": "2026-10-13T02:37:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0077"
+  },
+  {
+    "window_start": "2026-10-13T02:37:00Z",
+    "window_end": "2026-10-13T02:38:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0078"
+  },
+  {
+    "window_start": "2026-10-13T02:38:00Z",
+    "window_end": "2026-10-13T02:39:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0079"
+  },
+  {
+    "window_start": "2026-10-13T02:39:00Z",
+    "window_end": "2026-10-13T02:40:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0080"
+  },
+  {
+    "window_start": "2026-10-13T02:40:00Z",
+    "window_end": "2026-10-13T02:41:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0081"
+  },
+  {
+    "window_start": "2026-10-13T02:41:00Z",
+    "window_end": "2026-10-13T02:42:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0082"
+  },
+  {
+    "window_start": "2026-10-13T02:42:00Z",
+    "window_end": "2026-10-13T02:43:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0083"
+  },
+  {
+    "window_start": "2026-10-13T02:43:00Z",
+    "window_end": "2026-10-13T02:44:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0084"
+  },
+  {
+    "window_start": "2026-10-13T02:44:00Z",
+    "window_end": "2026-10-13T02:45:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0085"
+  },
+  {
+    "window_start": "2026-10-13T02:45:00Z",
+    "window_end": "2026-10-13T02:46:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0086"
+  },
+  {
+    "window_start": "2026-10-13T02:46:00Z",
+    "window_end": "2026-10-13T02:47:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0087"
+  },
+  {
+    "window_start": "2026-10-13T02:47:00Z",
+    "window_end": "2026-10-13T02:48:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0088"
+  },
+  {
+    "window_start": "2026-10-13T02:48:00Z",
+    "window_end": "2026-10-13T02:49:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0089"
+  },
+  {
+    "window_start": "2026-10-13T02:49:00Z",
+    "window_end": "2026-10-13T02:50:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0090"
+  },
+  {
+    "window_start": "2026-10-13T02:50:00Z",
+    "window_end": "2026-10-13T02:51:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0091"
+  },
+  {
+    "window_start": "2026-10-13T02:51:00Z",
+    "window_end": "2026-10-13T02:52:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0092"
+  },
+  {
+    "window_start": "2026-10-13T02:52:00Z",
+    "window_end": "2026-10-13T02:53:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0093"
+  },
+  {
+    "window_start": "2026-10-13T02:53:00Z",
+    "window_end": "2026-10-13T02:54:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0094"
+  },
+  {
+    "window_start": "2026-10-13T02:54:00Z",
+    "window_end": "2026-10-13T02:55:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0095"
+  },
+  {
+    "window_start": "2026-10-13T02:55:00Z",
+    "window_end": "2026-10-13T02:56:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0096"
+  },
+  {
+    "window_start": "2026-10-13T02:56:00Z",
+    "window_end": "2026-10-13T02:57:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0097"
+  },
+  {
+    "window_start": "2026-10-13T02:57:00Z",
+    "window_end": "2026-10-13T02:58:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0098"
+  },
+  {
+    "window_start": "2026-10-13T02:58:00Z",
+    "window_end": "2026-10-13T02:59:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0099"
+  },
+  {
+    "window_start": "2026-10-13T02:59:00Z",
+    "window_end": "2026-10-13T03:00:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0100"
+  },
+  {
+    "window_start": "2026-10-13T03:00:00Z",
+    "window_end": "2026-10-13T03:01:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0101"
+  },
+  {
+    "window_start": "2026-10-13T03:01:00Z",
+    "window_end": "2026-10-13T03:02:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0102"
+  },
+  {
+    "window_start": "2026-10-13T03:02:00Z",
+    "window_end": "2026-10-13T03:03:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0103"
+  },
+  {
+    "window_start": "2026-10-13T03:03:00Z",
+    "window_end": "2026-10-13T03:04:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0104"
+  },
+  {
+    "window_start": "2026-10-13T03:04:00Z",
+    "window_end": "2026-10-13T03:05:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0105"
+  },
+  {
+    "window_start": "2026-10-13T03:05:00Z",
+    "window_end": "2026-10-13T03:06:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0106"
+  },
+  {
+    "window_start": "2026-10-13T03:06:00Z",
+    "window_end": "2026-10-13T03:07:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0107"
+  },
+  {
+    "window_start": "2026-10-13T03:07:00Z",
+    "window_end": "2026-10-13T03:08:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0108"
+  },
+  {
+    "window_start": "2026-10-13T03:08:00Z",
+    "window_end": "2026-10-13T03:09:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0109"
+  },
+  {
+    "window_start": "2026-10-13T03:09:00Z",
+    "window_end": "2026-10-13T03:10:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0110"
+  },
+  {
+    "window_start": "2026-10-13T03:10:00Z",
+    "window_end": "2026-10-13T03:11:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0111"
+  },
+  {
+    "window_start": "2026-10-13T03:11:00Z",
+    "window_end": "2026-10-13T03:12:00Z",
+    "heart_rate_bpm": 71.2,
+    "physiological_load": 0.32,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0112"
+  },
+  {
+    "window_start": "2026-10-13T03:12:00Z",
+    "window_end": "2026-10-13T03:13:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0113"
+  },
+  {
+    "window_start": "2026-10-13T03:13:00Z",
+    "window_end": "2026-10-13T03:14:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0114"
+  },
+  {
+    "window_start": "2026-10-13T03:14:00Z",
+    "window_end": "2026-10-13T03:15:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0115"
+  },
+  {
+    "window_start": "2026-10-13T03:15:00Z",
+    "window_end": "2026-10-13T03:16:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0116"
+  },
+  {
+    "window_start": "2026-10-13T03:16:00Z",
+    "window_end": "2026-10-13T03:17:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0117"
+  },
+  {
+    "window_start": "2026-10-13T03:17:00Z",
+    "window_end": "2026-10-13T03:18:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0118"
+  },
+  {
+    "window_start": "2026-10-13T03:18:00Z",
+    "window_end": "2026-10-13T03:19:00Z",
+    "heart_rate_bpm": 72.6,
+    "physiological_load": 0.36,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0119"
+  },
+  {
+    "window_start": "2026-10-13T03:19:00Z",
+    "window_end": "2026-10-13T03:20:00Z",
+    "heart_rate_bpm": 69.8,
+    "physiological_load": 0.28,
+    "activity_level": 0.1,
+    "quality": "valid",
+    "evidence_id": "window-0120"
+  }
+]
