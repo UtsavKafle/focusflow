@@ -10,3 +10,4 @@ dist/
 data/raw/
 data/derived/
 .DS_Store
+data/mock/
