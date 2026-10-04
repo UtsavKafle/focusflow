@@ -18,14 +18,13 @@ import { fmtTime, ms } from '../lib/time'
 import type { HistoryResponse } from '../types'
 import { Card } from './ui'
 
-// Dark-mode steps of categorical slots 1 and 2 (validated as a pair against the panel surface).
-const C_LOAD = '#3987e5'
-const C_ACTIVITY = '#d95926'
-// One series on its own chart: the heart-rate line wears the same rose as the heart icon.
-const C_HR = '#fb7185'
-const INK = '#94a3b8'
-const GRID = '#263042'
-const SURFACE = '#141a26'
+// Muted lines share the surface palette; dash patterns also distinguish the series.
+const C_LOAD = 'var(--chart-primary)'
+const C_ACTIVITY = 'var(--chart-secondary)'
+const C_HR = 'var(--chart-primary)'
+const INK = 'var(--color-secondary)'
+const GRID = 'var(--chart-grid)'
+const SURFACE = 'var(--color-panel)'
 
 interface Row {
   t: number
@@ -85,12 +84,12 @@ function Tip(props: { active?: boolean; label?: number | string; payload?: reado
   const row = props.payload?.[0]?.payload
   if (!props.active || !row) return null
   return (
-    <div className="rounded-lg border border-white/10 bg-canvas px-2.5 py-1.5 text-xs shadow-xl">
-      <div className="font-semibold text-slate-50">{fmtTime(row.t, props.tz)}</div>
+    <div className="neu-tooltip glass-regular text-xs">
+      <div className="font-semibold text-ink">{fmtTime(row.t, props.tz)}</div>
       {(props.payload ?? []).map((p) => {
         const v = row[p.dataKey as keyof Row]
         return (
-          <div key={String(p.dataKey)} className="flex items-center gap-1.5 text-slate-300">
+          <div key={String(p.dataKey)} className="flex items-center gap-1.5 text-secondary">
             <span className="inline-block h-0.5 w-3" style={{ background: p.color }} />
             {String(p.name)}: <span className="font-medium">{v === null ? 'unavailable' : `${v}${props.unit}`}</span>
           </div>
@@ -118,11 +117,11 @@ export function Timeline(props: {
     const evidence = new Set(props.evidenceIds)
     for (const w of history?.windows ?? []) {
       const t = ms(w.window_end)
-      if (t !== null && w.evidence_id && evidence.has(w.evidence_id)) out.push({ t, label: 'evidence', color: '#9085e9', dashed: true })
+      if (t !== null && w.evidence_id && evidence.has(w.evidence_id)) out.push({ t, label: 'evidence', color: 'var(--color-accent)', dashed: true })
     }
     for (const d of props.decisions) {
       const t = ms(d.appliedAsOf)
-      if (t !== null) out.push({ t, label: 'plan changed', color: '#f8fafc', dashed: false })
+      if (t !== null) out.push({ t, label: 'plan changed', color: 'var(--color-ink)', dashed: false })
     }
     // Cited windows are often adjacent minutes: label only the first marker of each kind.
     const labelled = new Set<string>()
@@ -153,7 +152,7 @@ export function Timeline(props: {
   const overlays = (
     <>
       {gaps.map(([a, b]) => (
-        <ReferenceArea key={`g${a}`} x1={a} x2={b} fill="#94a3b8" fillOpacity={0.14} stroke="none" />
+        <ReferenceArea key={`g${a}`} x1={a} x2={b} fill="var(--color-muted)" fillOpacity={0.14} stroke="none" />
       ))}
       {markers.map((m, i) => (
         <ReferenceLine
@@ -174,6 +173,8 @@ export function Timeline(props: {
       type="monotone"
       stroke={color}
       strokeWidth={2}
+      strokeDasharray={key === 'activity' ? '5 4' : undefined}
+      strokeLinecap="round"
       dot={false}
       activeDot={{ r: 4, stroke: SURFACE, strokeWidth: 2 }}
       connectNulls={false}
@@ -190,10 +191,10 @@ export function Timeline(props: {
       subtitle={`One-minute windows up to replay time · ${history?.source_kind ? (SOURCE_LABEL[history.source_kind] ?? history.source_kind) : 'unknown'}`}
     >
       {rows.length === 0 ? (
-        <p className="text-sm text-slate-400">No wearable history is available for this run yet.</p>
+        <p className="text-sm text-secondary">No wearable history is available for this run yet.</p>
       ) : (
         <div className="space-y-1">
-          <div className="text-xs font-medium text-slate-400">Estimated load and activity (0 to 100, heuristic)</div>
+          <div className="text-xs font-medium text-secondary">Estimated load and activity (0 to 100, heuristic)</div>
           <div className="h-44">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={rows} syncId="wearable" margin={{ top: 8, right: 12, bottom: 0, left: -12 }}>
@@ -208,7 +209,7 @@ export function Timeline(props: {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <div className="pt-2 text-xs font-medium text-slate-400">Heart rate (bpm)</div>
+          <div className="pt-2 text-xs font-medium text-secondary">Heart rate (bpm)</div>
           <div className="h-36">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={rows} syncId="wearable" margin={{ top: 8, right: 12, bottom: 0, left: -12 }}>
@@ -221,7 +222,7 @@ export function Timeline(props: {
               </LineChart>
             </ResponsiveContainer>
           </div>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-[11px] text-secondary">
             Shaded bands mean heart rate and load are unavailable for that period; a break in a line means no valid value. Nothing is interpolated.
             {markers.length > 0 && ' Dashed lines mark evidence the coach cited; solid lines mark applied plan changes.'}
           </p>

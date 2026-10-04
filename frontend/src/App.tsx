@@ -12,9 +12,9 @@ import { useFocusFlow } from './hooks/useFocusFlow'
 import { safeTz } from './lib/time'
 
 const NOTICE_TONE = {
-  info: 'ring-emerald-400/30 bg-emerald-400/10 text-emerald-100',
-  warn: 'ring-amber-400/30 bg-amber-400/10 text-amber-100',
-  error: 'ring-rose-400/30 bg-rose-400/10 text-rose-100',
+  info: 'neu-notice--info',
+  warn: 'neu-notice--warn',
+  error: 'neu-notice--error',
 }
 
 export default function App() {
@@ -39,10 +39,10 @@ export default function App() {
     <div className="min-h-screen">
       <Header health={health} state={state} replay={ff.replay} tz={tz} sse={ff.sse} onOpenDemo={() => setDemoOpen(true)} />
 
-      <main className="mx-auto max-w-360 space-y-5 px-5 pt-5 pb-14">
+      <main className="app-main space-y-6">
         {ff.fatal && (
-          <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-rose-400/10 px-5 py-3 text-sm text-rose-100 ring-1 ring-rose-400/30" role="alert">
-            <span className="font-semibold">{ready ? 'Lost contact with the API; showing the last data received.' : 'Could not load FocusFlow.'}</span>
+          <div className="flex flex-wrap items-center gap-3 rounded-2xl neu-notice neu-notice--error px-5 py-3 text-sm text-danger" role="alert">
+            <span className="font-semibold">{ready ? 'Lost contact with the API; showing the last data received.' : 'Could not load !Presh.'}</span>
             <span>{ff.fatal}</span>
             <span className="ml-auto">
               <Button small onClick={() => void ff.refreshSnapshot()}>
@@ -53,7 +53,7 @@ export default function App() {
         )}
 
         {notice && (
-          <div className={`flex items-center gap-3 rounded-2xl px-5 py-2.5 text-sm ring-1 ${NOTICE_TONE[notice.kind]}`} role="status">
+          <div className={`neu-notice flex items-center gap-3 text-sm ${NOTICE_TONE[notice.kind]}`} role="status">
             <span>{notice.text}</span>
             <span className="ml-auto">
               <Button small onClick={() => ff.setNotice(null)}>
@@ -64,7 +64,7 @@ export default function App() {
         )}
 
         {!ready && !ff.fatal && (
-          <div className="rounded-2xl bg-panel p-10 text-center text-slate-400 ring-1 ring-white/10">
+          <div className="neu-card p-10 text-center text-secondary">
             {ff.loading
               ? 'Loading state, schedule and calendar…'
               : ff.notReady
@@ -75,13 +75,13 @@ export default function App() {
 
         {ready && (
           <>
-            <div className="grid gap-5 xl:grid-cols-12">
-              <div className="space-y-5 xl:col-span-4">
+            <div className="dashboard-grid">
+              <div className="dashboard-column">
                 <PhysiologyCard state={state} tz={tz} />
                 <CoachPanel ff={ff} />
                 <TasksPanel ff={ff} tz={tz} />
               </div>
-              <div className="space-y-5 xl:col-span-8">
+              <div className="dashboard-column">
                 <PlanCard ff={ff} tz={tz} onWhy={onWhy} />
                 <Timeline
                   history={ff.history}
@@ -97,7 +97,7 @@ export default function App() {
       </main>
 
       {/* Always on screen, whatever the scroll position. */}
-      <footer className="fixed inset-x-0 bottom-0 z-20 border-t border-white/10 bg-canvas/85 px-4 py-1.5 text-center text-[11px] text-slate-400 backdrop-blur">
+      <footer className="app-footer">
         {DISCLAIMER} Calendar and tasks are synthetic.
       </footer>
 

@@ -39,7 +39,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
     })
   } catch {
-    throw new ApiError(0, 'NETWORK', 'Cannot reach the FocusFlow API. Is the backend running?', true)
+    throw new ApiError(0, 'NETWORK', 'Cannot reach the !Presh API. Is the backend running?', true)
   }
   if (!res.ok) {
     let code = `HTTP_${res.status}`

@@ -9,48 +9,39 @@ import { Card, Chip } from './ui'
 function Unavailable(props: { reason?: string; large?: boolean }) {
   return (
     <>
-      <div className={`font-semibold text-slate-500 ${props.large ? 'text-2xl' : 'text-lg'}`}>unavailable</div>
-      <div className="mt-0.5 text-xs text-slate-400">{props.reason ? humanize(props.reason) : 'No reason reported'}</div>
+      <div className={`font-medium text-muted break-words ${props.large ? 'text-xl' : 'text-lg'}`}>unavailable</div>
+      <div className="mt-0.5 text-xs text-secondary">{props.reason ? humanize(props.reason) : 'No reason reported'}</div>
     </>
   )
 }
 
 function Tile(props: { label: string; note?: string; icon: ReactNode; children: ReactNode }) {
   return (
-    <div className="rounded-xl bg-white/5 p-3.5 ring-1 ring-white/5">
-      <div className="flex items-center gap-2 text-xs font-medium text-slate-300">
+    <div className="neu-tile">
+      <div className="flex items-center gap-2 text-xs font-medium text-secondary">
         {props.icon}
         {props.label}
       </div>
       <div className="mt-2">{props.children}</div>
-      {props.note && <div className="mt-1.5 text-[11px] text-slate-500">{props.note}</div>}
+      {props.note && <div className="mt-1.5 text-[11px] text-muted">{props.note}</div>}
     </div>
   )
 }
 
-/** 0-100 ring. Decorative emphasis only: the number in the middle is the value. */
+/** Decorative 270-degree dial; the adjacent text always exposes the actual value. */
 function Ring(props: { value: number }) {
-  const r = 34
-  const c = 2 * Math.PI * r
+  const active = Math.round(Math.min(100, Math.max(0, props.value)) / 100 * 40)
   return (
-    <svg viewBox="0 0 84 84" className="h-24 w-24 -rotate-90" aria-hidden>
-      <defs>
-        <linearGradient id="ring-load" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#818cf8" />
-          <stop offset="100%" stopColor="#c084fc" />
-        </linearGradient>
-      </defs>
-      <circle cx="42" cy="42" r={r} fill="none" stroke="rgb(255 255 255 / 0.08)" strokeWidth="8" />
-      <circle
-        cx="42"
-        cy="42"
-        r={r}
-        fill="none"
-        stroke="url(#ring-load)"
-        strokeWidth="8"
-        strokeLinecap="round"
-        strokeDasharray={`${(props.value / 100) * c} ${c}`}
-      />
+    <svg viewBox="0 0 120 120" className="h-full w-full" aria-hidden>
+      {Array.from({ length: 41 }, (_, i) => (
+        <line
+          key={i}
+          x1="60" y1="9" x2="60" y2="16"
+          transform={`rotate(${-135 + i * 6.75} 60 60)`}
+          stroke={i < active ? 'var(--gauge-active)' : 'var(--gauge-inactive)'}
+          strokeWidth="1.7" strokeLinecap="round"
+        />
+      ))}
     </svg>
   )
 }
@@ -73,12 +64,12 @@ function Small(props: {
         <Unavailable reason={props.reason} />
       ) : (
         <>
-          <div className="flex items-baseline gap-1">
-            <span className="text-xl font-semibold whitespace-nowrap text-slate-50 tabular-nums">{props.value}</span>
-            {props.unit && <span className="text-xs text-slate-400">{props.unit}</span>}
+          <div className="flex flex-wrap items-baseline gap-1">
+            <span className="text-xl font-medium text-ink tabular-nums">{props.value}</span>
+            {props.unit && <span className="text-xs text-secondary">{props.unit}</span>}
           </div>
           {typeof props.bar === 'number' && (
-            <div className="mt-2 h-1.5 rounded-full bg-white/10">
+            <div className="mt-2 h-1.5 neu-track">
               <div className={`h-1.5 rounded-full ${props.barClass}`} style={{ width: `${Math.min(100, props.bar)}%` }} />
             </div>
           )}
@@ -125,18 +116,18 @@ export function PhysiologyCard(props: { state: StudentState; tz: string }) {
         </Chip>
       }
     >
-      <div className="grid grid-cols-2 gap-3">
-        <Tile label="Load" note="estimated load, heuristic" icon={<Gauge size={15} className="text-indigo-300" aria-hidden />}>
+      <div className="metric-primary">
+        <Tile label="Load" note="estimated load, heuristic" icon={<Gauge size={15} className="text-accent" aria-hidden />}>
           {load === null ? (
             <Unavailable large reason={reasons.physiological_load} />
           ) : (
-            <div className="relative flex h-24 w-24 items-center justify-center">
+            <div className="metric-gauge relative flex items-center justify-center">
               <div className="absolute inset-0">
                 <Ring value={load} />
               </div>
               <div className="text-center leading-none">
-                <div className="text-3xl font-semibold text-slate-50 tabular-nums">{load}</div>
-                <div className="mt-0.5 text-[10px] text-slate-400">of 100</div>
+                <div className="metric-value text-ink tabular-nums">{load}</div>
+                <div className="mt-0.5 text-[10px] text-secondary">of 100</div>
               </div>
             </div>
           )}
@@ -147,7 +138,7 @@ export function PhysiologyCard(props: { state: StudentState; tz: string }) {
           icon={
             <Heart
               size={15}
-              className={`fill-rose-500 text-rose-500 ${hr === null ? 'opacity-40' : 'heartbeat'}`}
+              className={`text-danger ${hr === null ? 'opacity-40' : 'heartbeat'}`}
               // one beat of the animation per real beat
               style={hr === null || hr <= 0 ? undefined : { animationDuration: `${(60 / hr).toFixed(2)}s` }}
               aria-hidden
@@ -157,21 +148,21 @@ export function PhysiologyCard(props: { state: StudentState; tz: string }) {
           {hr === null ? (
             <Unavailable large reason={reasons.heart_rate_bpm} />
           ) : (
-            <div className="flex h-24 items-center gap-2">
-              <span className="text-5xl font-semibold text-slate-50 tabular-nums">{hr.toFixed(0)}</span>
-              <span className="text-sm text-slate-400">bpm</span>
+            <div className="flex h-30 flex-wrap items-center justify-center gap-1">
+              <span className="metric-value text-ink tabular-nums">{hr.toFixed(0)}</span>
+              <span className="text-sm text-secondary">bpm</span>
             </div>
           )}
         </Tile>
       </div>
 
-      <div className="mt-3 grid grid-cols-3 gap-3">
+      <div className="metric-secondary">
         <Small
           label="Est. rest"
           note={`not sleep staging${target === null ? '' : ` · target ${fmtMinutes(target)}`}`}
           icon={Moon}
-          iconClass="text-violet-300"
-          barClass="bg-violet-400"
+          iconClass="text-accent"
+          barClass="bg-accent"
           value={rest === null ? null : fmtMinutes(rest)}
           bar={rest === null || target === null || target <= 0 ? null : (rest / target) * 100}
           reason={reasons.estimated_rest_minutes}
@@ -180,8 +171,8 @@ export function PhysiologyCard(props: { state: StudentState; tz: string }) {
           label="Recovery"
           note="heuristic score"
           icon={BatteryCharging}
-          iconClass="text-emerald-300"
-          barClass="bg-emerald-400"
+          iconClass="text-success"
+          barClass="bg-success"
           value={recovery === null ? null : String(recovery)}
           unit="/ 100"
           bar={recovery}
@@ -191,8 +182,8 @@ export function PhysiologyCard(props: { state: StudentState; tz: string }) {
           label="Activity"
           note="movement level"
           icon={Footprints}
-          iconClass="text-sky-300"
-          barClass="bg-sky-400"
+          iconClass="text-accent"
+          barClass="bg-muted"
           value={activity === null ? null : String(activity)}
           unit="/ 100"
           bar={activity}
@@ -201,16 +192,16 @@ export function PhysiologyCard(props: { state: StudentState; tz: string }) {
       </div>
 
       <div className="mt-4">
-        <div className="mb-1.5 text-xs font-medium text-slate-400">Signal coverage</div>
+        <div className="mb-1.5 text-xs font-medium text-secondary">Signal coverage</div>
         <dl className="grid grid-cols-4 gap-3">
           {coverage.map(([name, v]) => (
             <div key={name}>
-              <div className="flex items-baseline justify-between text-[11px]">
-                <dt className="text-slate-400">{name}</dt>
-                <dd className="font-semibold text-slate-200 tabular-nums">{v === null ? 'unknown' : `${Math.round(v * 100)}%`}</dd>
+              <div className="flex flex-wrap items-baseline justify-between gap-1 text-[11px]">
+                <dt className="text-secondary">{name}</dt>
+                <dd className="font-semibold text-ink tabular-nums">{v === null ? 'unknown' : `${Math.round(v * 100)}%`}</dd>
               </div>
-              <div className="mt-1 h-1 rounded-full bg-white/10">
-                {v !== null && <div className="h-1 rounded-full bg-slate-400" style={{ width: `${v * 100}%` }} />}
+              <div className="mt-1 h-1 neu-track">
+                {v !== null && <div className="h-1 rounded-full bg-muted" style={{ width: `${v * 100}%` }} />}
               </div>
             </div>
           ))}

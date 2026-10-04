@@ -27,8 +27,8 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
 
   const stat = (label: string, value: string) => (
     <div>
-      <dt className="text-[11px] text-slate-400">{label}</dt>
-      <dd className="text-sm font-semibold text-slate-50">{value}</dd>
+      <dt className="text-[11px] text-secondary">{label}</dt>
+      <dd className="text-sm font-semibold text-ink">{value}</dd>
     </div>
   )
 
@@ -39,7 +39,7 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
       onClose={props.onClose}
     >
       <div className="space-y-5">
-        <dl className="grid grid-cols-3 gap-x-4 gap-y-3 rounded-xl bg-white/5 p-4">
+        <dl className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3 rounded-xl neu-inset p-4">
           {stat('Status', replay?.state ?? 'unknown')}
           {stat('Speed', speed === null ? 'unknown' : `${speed}x`)}
           {stat('Pipeline lag', lag === null ? 'unknown' : `${lag.toFixed(0)} s`)}
@@ -54,7 +54,7 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
             <select
               value={selected}
               onChange={(e) => setScenario(e.target.value)}
-              className="rounded-lg border border-white/10 bg-canvas px-3 py-1.5 text-sm text-slate-50"
+              className="neu-input glass-input"
             >
               {options.map((s) => (
                 <option key={s} value={s}>
@@ -65,9 +65,9 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
           </label>
           <div role="group" aria-label="Replay speed">
             <Label>Speed</Label>
-            <div className="flex gap-1">
+            <div className="glass-segmented flex flex-wrap gap-2">
               {SPEEDS.map((s) => (
-                <Button key={s} small active={ff.speed === s} onClick={() => ff.setSpeed(s)}>
+                <Button key={s} small glass active={ff.speed === s} onClick={() => ff.setSpeed(s)}>
                   {s}x
                 </Button>
               ))}
@@ -79,14 +79,14 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
           <Button tone="primary" disabled={busy} onClick={() => void run(() => ff.replayStart(selected))}>
             Play from start
           </Button>
-          <Button disabled={busy || replay?.state !== 'running'} onClick={() => void run(ff.replayPause)}>
+          <Button glass disabled={busy || replay?.state !== 'running'} onClick={() => void run(ff.replayPause)}>
             Pause
           </Button>
-          <Button disabled={busy} onClick={() => void run(ff.replayReset)}>
+          <Button glass disabled={busy} onClick={() => void run(ff.replayReset)}>
             Reset
           </Button>
           {isMock && (
-            <Button disabled={busy} onClick={() => void run(ff.mockStep)} title="Fixture mode only: advance the replay by one state (5 replay minutes)">
+            <Button glass disabled={busy} onClick={() => void run(ff.mockStep)} title="Fixture mode only: advance the replay by one state (5 replay minutes)">
               Step +1
             </Button>
           )}
@@ -96,14 +96,14 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
           <Label>Jump to a prepared moment</Label>
           <div className="flex flex-wrap gap-1.5">
             {BOOKMARKS.map((b) => (
-              <Button key={b.at} small disabled={busy} onClick={() => void run(() => ff.replayStart(selected, b.at))}>
+              <Button key={b.at} small glass disabled={busy} onClick={() => void run(() => ff.replayStart(selected, b.at))}>
                 {b.label} · {fmtDayTime(b.at, tz)}
               </Button>
             ))}
           </div>
         </div>
 
-        <p className="text-[11px] text-slate-400">
+        <p className="text-[11px] text-secondary">
           {isMock
             ? 'Fixture mode: choosing another scenario starts a new run. One fixture state covers 5 replay minutes.'
             : 'The calendar and tasks are synthetic in every mode.'}

@@ -7,20 +7,13 @@ const HOUR_PX = 28
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
 
 function kindClass(item: GridItem): string {
-  if (item.variant === 'ghost') return 'ghost-block border-dashed border-slate-500 text-slate-400 line-through'
+  if (item.variant === 'ghost') return 'ghost-block'
   switch (item.kind) {
-    case 'study':
-      return 'bg-sky-500/20 border-sky-400/70 text-sky-50'
-    case 'fixed':
-      return item.fixedKind === 'exam' || item.fixedKind === 'quiz'
-        ? 'bg-rose-500/25 border-rose-400/80 text-rose-50'
-        : 'bg-slate-400/20 border-slate-400/60 text-slate-100'
-    case 'sleep_protected':
-      return 'bg-indigo-500/10 border-indigo-400/25 text-indigo-200'
-    case 'sleep_extension':
-      return 'bg-emerald-500/25 border-emerald-400/80 text-emerald-50'
-    default:
-      return 'bg-white/5 border-white/20 text-slate-200'
+    case 'study': return 'calendar-block--study'
+    case 'fixed': return item.fixedKind === 'exam' || item.fixedKind === 'quiz' ? 'calendar-block--exam' : 'calendar-block--class'
+    case 'sleep_protected': return 'calendar-block--sleep'
+    case 'sleep_extension': return 'calendar-block--extension'
+    default: return ''
   }
 }
 
@@ -33,9 +26,9 @@ function Block(props: { seg: Segment; tz: string; onClick?: (blockId: string) =>
   const clickable = item.variant === 'applied' && item.blockId !== undefined && props.onClick !== undefined
   const highlight =
     item.variant === 'changed'
-      ? 'ring-2 ring-amber-400 z-10'
+      ? 'calendar-block--changed z-10'
       : item.variant === 'applied'
-        ? 'ring-2 ring-violet-400 z-10'
+        ? 'calendar-block--applied z-10'
         : ''
   const style = {
     top: (seg.startMin / 60) * HOUR_PX,
@@ -49,21 +42,15 @@ function Block(props: { seg: Segment; tz: string; onClick?: (blockId: string) =>
       <span className="font-semibold">{item.title}</span>
       {item.tag && (
         <span
-          className={`ml-1 rounded px-1 text-[9px] font-bold no-underline ${
-            item.variant === 'ghost'
-              ? 'bg-white/10 text-slate-400'
-              : item.variant === 'applied'
-                ? 'bg-violet-500 text-white'
-                : 'bg-amber-400 text-amber-950'
-          }`}
+          className="calendar-tag ml-1 px-1 text-[9px] font-semibold no-underline"
         >
           {item.tag}
         </span>
       )}
-      {height >= 34 && <span className="block opacity-80">{fmtRange(item.start, item.end, props.tz)}</span>}
+      {height >= 34 && <span className="block">{fmtRange(item.start, item.end, props.tz)}</span>}
     </>
   )
-  const cls = `absolute overflow-hidden rounded border px-1 text-left text-[10px] leading-[12px] ${kindClass(item)} ${highlight}`
+  const cls = `calendar-block absolute overflow-hidden px-1 text-left text-[10px] leading-[12px] ${kindClass(item)} ${highlight}`
 
   return clickable ? (
     <button
@@ -101,17 +88,17 @@ export function WeekGrid(props: {
     return dayRange(keys[0], keys[keys.length - 1])
   }, [segments, now?.dayKey])
 
-  if (days.length === 0) return <p className="text-sm text-slate-400">No plan blocks to show.</p>
+  if (days.length === 0) return <p className="text-sm text-secondary">No plan blocks to show.</p>
 
   return (
-    <div className="overflow-x-auto">
+    <div className="calendar-well" role="region" aria-label="Weekly calendar, scroll horizontally for more days" tabIndex={0}>
       <div className="grid min-w-[560px]" style={{ gridTemplateColumns: `3.25rem repeat(${days.length}, minmax(0, 1fr))` }}>
         <div />
         {days.map((d) => (
           <div
             key={d}
-            className={`border-b border-white/10 pb-2 text-center text-xs font-semibold ${
-              now?.dayKey === d ? 'text-indigo-300' : 'text-slate-300'
+            className={`border-b border-separator pb-2 text-center text-xs font-semibold ${
+              now?.dayKey === d ? 'text-accent' : 'text-secondary'
             }`}
           >
             {fmtDayKey(d)}
@@ -121,17 +108,17 @@ export function WeekGrid(props: {
 
         <div className="relative" style={{ height: 24 * HOUR_PX }}>
           {HOURS.filter((h) => h % 2 === 0).map((h) => (
-            <div key={h} className="absolute right-1.5 text-[10px] text-slate-500" style={{ top: h * HOUR_PX - 6 }}>
+            <div key={h} className="absolute right-1.5 text-[10px] text-muted" style={{ top: h * HOUR_PX - 6 }}>
               {h === 0 ? '' : hourLabel(h)}
             </div>
           ))}
         </div>
         {days.map((d) => (
-          <div key={d} className="relative border-l border-white/5" style={{ height: 24 * HOUR_PX }}>
+          <div key={d} className="relative border-l border-separator" style={{ height: 24 * HOUR_PX }}>
             {HOURS.map((h) => (
               <div
                 key={h}
-                className={`absolute inset-x-0 border-t ${h % 2 === 0 ? 'border-white/5' : 'border-transparent'}`}
+                className={`absolute inset-x-0 border-t ${h % 2 === 0 ? 'border-separator' : 'border-transparent'}`}
                 style={{ top: h * HOUR_PX }}
               />
             ))}
@@ -142,10 +129,10 @@ export function WeekGrid(props: {
               ))}
             {now?.dayKey === d && (
               <div
-                className="pointer-events-none absolute inset-x-0 z-20 border-t-2 border-red-500"
+                className="pointer-events-none absolute inset-x-0 z-20 border-t-2 border-danger"
                 style={{ top: (now.minutes / 60) * HOUR_PX }}
               >
-                <span className="absolute -top-3.5 right-0 rounded bg-red-500 px-1 text-[9px] font-bold text-white">
+                <span className="absolute -top-3.5 right-0 rounded bg-danger px-1 text-[9px] font-semibold text-panel">
                   NOW
                 </span>
               </div>
@@ -160,18 +147,18 @@ export function WeekGrid(props: {
 export function PlanLegend() {
   const entry = (cls: string, text: string) => (
     <span className="inline-flex items-center gap-1">
-      <span className={`inline-block h-3 w-4 rounded border ${cls}`} />
+      <span className={`calendar-block inline-block h-3 w-4 ${cls}`} />
       {text}
     </span>
   )
   return (
-    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-400">
-      {entry('bg-rose-500/25 border-rose-400/80', 'Exam / quiz')}
-      {entry('bg-slate-400/20 border-slate-400/60', 'Class')}
-      {entry('bg-sky-500/20 border-sky-400/70', 'Study block')}
-      {entry('bg-indigo-500/10 border-indigo-400/25', 'Protected sleep')}
-      {entry('bg-emerald-500/25 border-emerald-400/80', 'Sleep extension')}
-      {entry('ghost-block border-dashed border-slate-500', 'Old position')}
+    <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-secondary">
+      {entry('calendar-block--exam', 'Exam / quiz')}
+      {entry('calendar-block--class', 'Class')}
+      {entry('calendar-block--study', 'Study block')}
+      {entry('calendar-block--sleep', 'Protected sleep')}
+      {entry('calendar-block--extension', 'Sleep extension')}
+      {entry('ghost-block', 'Old position')}
     </div>
   )
 }

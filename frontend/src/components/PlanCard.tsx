@@ -11,18 +11,18 @@ import { PlanLegend, WeekGrid } from './WeekGrid'
 function UnscheduledList(props: { work: UnscheduledWork[]; calendar: CalendarBundle | null; tz: string; proposed: boolean }) {
   if (props.work.length === 0) return null
   return (
-    <div className="rounded-xl bg-rose-400/10 p-4 ring-1 ring-rose-400/30" role="alert">
-      <div className="text-sm font-semibold text-rose-200">
+    <div className="rounded-xl neu-notice neu-notice--error p-4" role="alert">
+      <div className="text-sm font-semibold text-danger">
         {props.proposed ? 'Not everything fits: work left unscheduled' : 'Unscheduled work in the current plan'}
       </div>
-      <ul className="mt-1.5 space-y-1 text-sm text-rose-100">
+      <ul className="mt-1.5 space-y-1 text-sm text-danger">
         {props.work.map((u) => (
           <li key={`${u.task_id}:${u.deadline}`}>
             <span className="font-semibold">
               {props.calendar?.tasks.find((t) => t.task_id === u.task_id)?.title ?? u.task_id}
             </span>
             : {fmtMinutes(u.minutes)} cannot be placed before {fmtDayTime(u.deadline, props.tz)}.{' '}
-            <span className="text-rose-200">{reasonLabel(u.reason)}.</span>
+            <span className="text-danger">{reasonLabel(u.reason)}.</span>
           </li>
         ))}
       </ul>
@@ -38,27 +38,27 @@ function ChangeList(props: {
   tz: string
 }) {
   const { changes, before, after, calendar, tz } = props
-  if (changes.length === 0) return <p className="text-sm text-slate-400">The proposal keeps the plan as it is.</p>
+  if (changes.length === 0) return <p className="text-sm text-secondary">The proposal keeps the plan as it is.</p>
   const describe = (ids: string[] | undefined, pool: ScheduleBlock[]) =>
     (ids ?? [])
       .map((id) => pool.find((b) => b.block_id === id))
       .filter((b): b is ScheduleBlock => b !== undefined)
   return (
-    <ul className="space-y-1.5 text-sm">
+    <ul className="space-y-4 text-sm">
       {changes.map((c) => {
         const olds = describe(c.old_block_ids, before)
         const news = describe(c.new_block_ids, after)
         const title = blockTitle(news[0] ?? olds[0] ?? ({ kind: 'study', block_id: '', start: '', end: '' } as ScheduleBlock), calendar).title
         return (
-          <li key={c.change_id} className="rounded-xl bg-white/5 px-3.5 py-2.5">
+          <li key={c.change_id} className="neu-list-item">
             <div className="flex flex-wrap items-center gap-2">
               <Chip tone="alert">{c.action}</Chip>
-              <span className="font-semibold text-slate-50">{title}</span>
-              <span className="text-xs text-slate-400">{reasonLabel(c.reason_code)}</span>
+              <span className="font-semibold text-ink">{title}</span>
+              <span className="text-xs text-secondary">{reasonLabel(c.reason_code)}</span>
             </div>
-            <div className="mt-1 text-xs text-slate-300">
+            <div className="mt-1 text-xs text-secondary">
               {olds.length > 0 && (
-                <span className="text-slate-400 line-through">
+                <span className="text-secondary line-through">
                   {olds.map((b) => fmtRange(b.start, b.end, tz)).join(', ')}
                 </span>
               )}
@@ -106,11 +106,11 @@ export function PlanCard(props: { ff: FocusFlow; tz: string; onWhy: (blockId: st
       }
       right={
         proposal && (
-          <div className="flex gap-1">
-            <Button small active={!showCurrent} onClick={() => setShowCurrent(false)}>
+          <div className="glass-segmented flex flex-wrap gap-2">
+            <Button small glass active={!showCurrent} onClick={() => setShowCurrent(false)}>
               Before / after
             </Button>
-            <Button small active={showCurrent} onClick={() => setShowCurrent(true)}>
+            <Button small glass active={showCurrent} onClick={() => setShowCurrent(true)}>
               Current only
             </Button>
           </div>
@@ -119,8 +119,8 @@ export function PlanCard(props: { ff: FocusFlow; tz: string; onWhy: (blockId: st
     >
       <div className="space-y-4">
         {proposal && (
-          <div className="flex flex-wrap items-center gap-2 rounded-xl bg-amber-400/10 px-4 py-3 ring-1 ring-amber-400/30">
-            <span className="text-sm font-semibold text-amber-100">Coach proposal</span>
+          <div className="flex flex-wrap items-center gap-2 rounded-xl neu-notice neu-notice--warn px-4 py-3">
+            <span className="text-sm font-semibold text-warning">Coach proposal</span>
             <Chip tone={proposal.status === 'feasible' ? 'good' : 'bad'}>{proposal.status}</Chip>
             <Chip tone={proposal.validation.passed ? 'good' : 'bad'}>
               scheduler checks {proposal.validation.passed ? 'passed' : 'failed'}
@@ -159,8 +159,8 @@ export function PlanCard(props: { ff: FocusFlow; tz: string; onWhy: (blockId: st
           </div>
         )}
         {!diffing && decisions.length > 0 && (
-          <p className="text-xs text-slate-400">
-            Blocks tagged <span className="rounded bg-violet-500 px-1 text-[9px] font-bold text-white">WHY?</span> were
+          <p className="text-xs text-secondary">
+            Blocks tagged <span className="calendar-tag px-1 text-[9px] font-semibold text-ink">WHY?</span> were
             changed by the coach. Click one to see the saved explanation.
           </p>
         )}

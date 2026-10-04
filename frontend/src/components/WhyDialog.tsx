@@ -28,8 +28,8 @@ export function WhyDialog(props: { decisionId: string; blockId: string; onClose:
 
   return (
     <Modal title="Why did this change?" subtitle={`Saved decision ${decisionId}`} onClose={onClose}>
-      {error && <p className="text-sm text-rose-300">The saved decision could not be loaded: {error}</p>}
-      {!error && !decision && <p className="text-sm text-slate-400">Loading saved explanation…</p>}
+      {error && <p className="text-sm text-danger">The saved decision could not be loaded: {error}</p>}
+      {!error && !decision && <p className="text-sm text-secondary">Loading saved explanation…</p>}
       {decision && (
         <div className="space-y-4">
           <div className="flex flex-wrap gap-1.5">
@@ -41,7 +41,7 @@ export function WhyDialog(props: { decisionId: string; blockId: string; onClose:
             {decision.explanation_kind === 'fallback' && <Chip tone="alert">fallback explanation</Chip>}
           </div>
           <ExplanationText text={decision.explanation || 'No explanation was saved with this decision.'} />
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 rounded-xl bg-white/5 p-3 text-xs text-slate-400">
+          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 rounded-xl neu-inset p-3 text-xs text-secondary">
             <dt>Schedule</dt>
             <dd>
               v{decision.before_version ?? '?'} →{' '}

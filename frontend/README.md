@@ -31,3 +31,11 @@ pick it and press Play or a Jump bookmark (fixture mode starts a new run). Other
 - `503 STATE_NOT_READY` shows a waiting screen (polls every 3 s), `409 STALE_VERSION` refetches, `409 ALREADY_APPLIED` resyncs.
 - Explanations with `kind: fallback` are labeled "fallback explanation"; chat answers show their `kind` (saved | llm | fallback).
 - Null is shown as "unavailable" with the reason from `quality.missing_reasons`; never 0, never NaN. Timeline gaps stay gaps.
+
+## Visual system
+- `src/index.css` implements `../NEUMORPHIC_FRONTEND_STYLE_GUIDE.md`: matte gray surfaces, upper-left lighting, shared raised/inset shadows, and generous radii.
+- `src/components/ui.tsx` owns reusable cards, chips, buttons, icon wells, and keyboard-safe dialogs; feature panels use the same `neu-*` classes.
+- Text tokens are darker than the guide's decorative grays for readable contrast; muted accents indicate status, while labels and line patterns also identify states.
+- The layout stacks below 1100px, keeps the source badge visible on mobile, and contains calendar scrolling within its own keyboard-focusable region.
+- Controls have visible focus, pressed and disabled states, 44px minimum targets, and reduced-motion support. Dense calendar blocks keep their time-proportional heights.
+- `../NEUMORPHIC_APPLE_GLASS_UI_ADDENDUM.md` adds a floating glass layer for navigation, status, actions, inputs, tooltips, dialogs, and the footer; data panels stay matte. CSS provides opaque and reduced-transparency fallbacks.

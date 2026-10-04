@@ -78,9 +78,9 @@ function Chat() {
         <ul className="mb-3 max-h-72 space-y-3 overflow-y-auto">
           {turns.map((t, i) => (
             <li key={i}>
-              <div className="text-sm font-medium text-slate-50">{t.q}</div>
+              <div className="text-sm font-medium text-ink">{t.q}</div>
               {t.a && (
-                <div className="mt-1 rounded-xl bg-white/5 p-3">
+                <div className="mt-1 rounded-xl neu-inset p-3">
                   <ExplanationText text={t.a.answer} />
                   {t.a.kind && (
                     <div className="mt-2">
@@ -89,7 +89,7 @@ function Chat() {
                   )}
                 </div>
               )}
-              {t.error && <div className="mt-1 text-sm text-rose-300">Could not get an answer: {t.error}</div>}
+              {t.error && <div className="mt-1 text-sm text-danger">Could not get an answer: {t.error}</div>}
             </li>
           ))}
         </ul>
@@ -100,12 +100,12 @@ function Chat() {
           onChange={(e) => setText(e.target.value)}
           placeholder="Why was my Algorithms review moved?"
           aria-label="Question for the coach"
-          className="min-w-0 flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-2 focus:outline-indigo-400"
+          className="neu-input glass-input min-w-0 flex-1"
         />
         <button
           type="submit"
           disabled={busy || text.trim() === ''}
-          className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm font-medium text-slate-200 hover:bg-white/10 disabled:opacity-50"
+          className="neu-button glass-button"
         >
           <span className="flex items-center gap-1.5">
             <Send size={14} aria-hidden />
@@ -144,24 +144,24 @@ export function CoachPanel(props: { ff: FocusFlow }) {
   const working = ff.replanning || job?.status === 'queued' || job?.status === 'running'
 
   const stat = (value: string, label: string) => (
-    <div className="rounded-xl bg-white/5 px-3 py-2.5 ring-1 ring-white/5">
-      <div className="text-lg font-semibold text-slate-50 tabular-nums">{value}</div>
-      <div className="text-[11px] text-slate-400">{label}</div>
+    <div className="neu-tile">
+      <div className="text-lg font-semibold text-ink tabular-nums">{value}</div>
+      <div className="text-[11px] text-secondary">{label}</div>
     </div>
   )
 
   return (
     <Card id="coach" title="AI coach" icon={Sparkles} iconTone="indigo" subtitle={`Suggestions only, you decide · rules ${trigger.rule_version ?? 'unknown'}`}>
       <div className="space-y-5">
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-4 min-[400px]:grid-cols-3">
           {stat(hours === null ? 'unknown' : `${hours.toFixed(1)} h`, 'until next exam')}
           {stat(remaining === null ? 'unknown' : fmtMinutes(remaining), 'work remaining')}
           {stat(pressure === null ? 'unknown' : `${Math.round(pressure * 100)} / 100`, 'deadline pressure, heuristic')}
         </div>
 
         {trigger.replan_recommended ? (
-          <div className="rounded-xl bg-linear-to-br from-amber-400/15 to-amber-400/5 p-4 ring-1 ring-amber-400/30">
-            <div className="text-sm font-semibold text-amber-100">Replan recommended</div>
+          <div className="rounded-xl neu-notice neu-notice--warn p-4">
+            <div className="text-sm font-semibold text-warning">Replan recommended</div>
             <div className="mt-2 flex flex-wrap gap-1.5">
               {reasons.map((r) => (
                 <Chip key={r} tone="alert" title={r}>
@@ -183,10 +183,10 @@ export function CoachPanel(props: { ff: FocusFlow }) {
             </div>
           </div>
         ) : (
-          <div className="rounded-xl bg-white/5 p-4">
-            <div className="text-sm font-semibold text-slate-50">No replan recommended right now</div>
+          <div className="rounded-xl neu-inset p-4">
+            <div className="text-sm font-semibold text-ink">No replan recommended right now</div>
             {reasons.length > 0 && (
-              <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
+              <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-secondary">
                 Signals noted
                 {reasons.map((r) => (
                   <Chip key={r} title={r}>
@@ -196,7 +196,7 @@ export function CoachPanel(props: { ff: FocusFlow }) {
               </div>
             )}
             {suppressed.length > 0 && (
-              <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
+              <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-secondary">
                 Held back because
                 {suppressed.map((r) => (
                   <Chip key={r} tone="bad" title={r}>
@@ -212,29 +212,29 @@ export function CoachPanel(props: { ff: FocusFlow }) {
           <div className="space-y-4">
             <div>
               <div className="mb-2 flex items-center gap-2">
-                <span className="text-xs font-medium text-slate-400">What the coach did</span>
+                <span className="text-xs font-medium text-secondary">What the coach did</span>
                 <Chip tone={job.status === 'failed' ? 'bad' : job.status === 'applied' ? 'good' : 'info'}>
                   {JOB_STATUS[job.status] ?? job.status}
                 </Chip>
               </div>
               {log.length === 0 ? (
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-secondary">
                   {working ? 'Waiting for the first tool action…' : 'No tool actions were reported for this job.'}
                 </p>
               ) : (
-                <ol className="space-y-1 text-sm text-slate-300">
+                <ol className="space-y-1 text-sm text-secondary">
                   {log.map((ev) => {
                     const d = describe(ev)
                     return (
                       <li key={ev.event_id} className="flex gap-2" title={d.hint}>
                         {d.failed ? (
-                          <XCircle size={15} className="mt-0.5 shrink-0 text-rose-400" aria-hidden />
+                          <XCircle size={15} className="mt-0.5 shrink-0 text-danger" aria-hidden />
                         ) : (
-                          <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-emerald-400" aria-hidden />
+                          <CheckCircle2 size={15} className="mt-0.5 shrink-0 text-success" aria-hidden />
                         )}
                         <span>
                           {d.text}
-                          {d.failed && <span className="ml-1.5 font-medium text-rose-300">failed</span>}
+                          {d.failed && <span className="ml-1.5 font-medium text-danger">failed</span>}
                         </span>
                       </li>
                     )
@@ -242,24 +242,24 @@ export function CoachPanel(props: { ff: FocusFlow }) {
                 </ol>
               )}
               {job.status === 'failed' && (
-                <div className="mt-2 rounded-xl bg-rose-400/10 p-3 text-sm text-rose-200 ring-1 ring-rose-400/30" role="alert">
+                <div className="mt-2 rounded-xl neu-notice neu-notice--error p-3 text-sm text-danger" role="alert">
                   The coach could not produce a plan: {job.error?.message ?? 'unknown error'}
                 </div>
               )}
             </div>
 
             {explanation && (
-              <div className="rounded-xl bg-indigo-400/10 p-4 ring-1 ring-indigo-400/20">
+              <div className="rounded-xl neu-inset p-4">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-semibold text-slate-50">Explanation</span>
+                  <span className="text-sm font-semibold text-ink">Explanation</span>
                   {fallback && <Chip tone="alert">fallback explanation</Chip>}
                 </div>
                 <ExplanationText text={explanation} />
                 {(job.evidence_ids ?? []).length > 0 && (
-                  <div className="mt-3 text-xs text-slate-400">Evidence: {(job.evidence_ids ?? []).join(', ')}</div>
+                  <div className="mt-3 text-xs text-secondary">Evidence: {(job.evidence_ids ?? []).join(', ')}</div>
                 )}
                 {job.status === 'ready' && !job.proposal && (
-                  <p className="mt-2 text-xs text-slate-400">No schedule change was proposed.</p>
+                  <p className="mt-2 text-xs text-secondary">No schedule change was proposed.</p>
                 )}
               </div>
             )}
