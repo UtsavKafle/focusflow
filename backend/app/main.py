@@ -148,7 +148,8 @@ def create_app(scenario: str = "trigger", data_source: str = "fixture", db_path:
         async def gen():
             seq = 0
             while True:
-                svc.compose()  # detect replay progress -> state.updated
+                # compose() may run a blocking Databricks query; never run it on the event loop
+                await asyncio.to_thread(svc.compose)  # detect replay progress -> state.updated
                 for e in svc.bus.since(seq):
                     seq = e.sequence
                     yield f"id: {e.event_id}\nevent: {e.type}\ndata: {e.model_dump_json()}\n\n"
