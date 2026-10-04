@@ -263,3 +263,65 @@ def test_clock_clause_added_to_gold_latest_sql():
     assert "as_of <= :clock" in s._latest_sql(clock=True) and "as_of <= :clock" not in s._latest_sql()
     s.run_id = None
     assert "WHERE as_of <= :clock" in s._latest_sql(clock=True)
+
+
+# ---- feature replay: Data B's exported CSV (data/derived/<run_id>/feature_replay/gold.csv), no credentials ----
+from backend.app import databricks_reader
+
+
+@pytest.fixture
+def saved_env(tmp_path, monkeypatch):
+    d = tmp_path / "data" / "derived" / "mock-1" / "feature_replay"
+    d.mkdir(parents=True)
+    df = pd.read_csv(GOLD_CSV, dtype=str)  # an export run with the demo shift: scenario (2026) times, text otherwise
+    for c in ("as_of", "window_start", "window_end", "baseline_cutoff"):
+        df[c] = (pd.to_datetime(df[c], utc=True) + SHIFT).astype(str)
+    df.to_csv(d / "gold.csv", index=False)
+    monkeypatch.setattr(databricks_reader, "ROOT", tmp_path)
+    for k in ("DATABRICKS_HOST", "DATABRICKS_TOKEN", "DATABRICKS_SQL_WAREHOUSE_ID", "FOCUSFLOW_REPLAY_RAW_DIR",
+              "FOCUSFLOW_REPLAY_SCENARIO_START", "FOCUSFLOW_REPLAY_SOURCE_KIND"):
+        monkeypatch.delenv(k, raising=False)
+    monkeypatch.setenv("FOCUSFLOW_REPLAY_MODE", "saved")
+    monkeypatch.setenv("FOCUSFLOW_RUN_ID", "mock-1")
+    return d / "gold.csv"
+
+
+def test_saved_replay_reads_csv_without_credentials(saved_env):
+    s = DatabricksSource.from_env()
+    assert s.mode == "saved_replay" and s.replay is None
+    assert s.label.startswith("SYNTHETIC feature replay") and "Databricks" not in s.label
+    snap = s.latest()  # no bookmark configured -> newest row of the run
+    assert snap.run_id == "mock-1" and snap.participant_id == "001" and snap.source_kind == "synthetic_fixture"
+    assert snap.wearable.window_end == pd.to_datetime(pd.read_csv(saved_env)["window_end"], utc=True).max()
+
+
+def test_saved_replay_follows_clock_and_fires_trigger(saved_env):
+    s = DatabricksSource.from_env()
+    moment = datetime(2026, 10, 13, 3, 20, tzinfo=timezone.utc)  # cramming moment (2020-02-16 23:20 source time)
+    s.start(1, moment)
+    st = Services(s, Store(), "trigger", data_source="databricks").compose()
+    assert st.as_of == moment and st.source_kind == "synthetic_fixture" and st.trigger.replan_recommended
+    hist = s.history()
+    assert hist and all(datetime.fromisoformat(w["window_end"]) <= moment for w in hist)
+    assert all(w["evidence_id"].startswith("window-") for w in hist)  # parsed list, not split characters
+
+
+def test_saved_replay_warmup_nulls_keep_reasons(saved_env):
+    s = DatabricksSource.from_env()
+    s.start(1, datetime(2026, 10, 10, 0, 0, tzinfo=timezone.utc))
+    ws = s.latest().wearable
+    assert ws.physiological_load is None and ws.quality.missing_reasons["physiological_load"] == "baseline_warmup"
+
+
+def test_saved_replay_needs_run_id_and_file(saved_env, monkeypatch):
+    monkeypatch.setenv("FOCUSFLOW_RUN_ID", "no-such-run")
+    with pytest.raises(RuntimeError, match="feature replay file not found"):
+        DatabricksSource.from_env()
+    monkeypatch.delenv("FOCUSFLOW_RUN_ID")
+    with pytest.raises(RuntimeError, match="FOCUSFLOW_RUN_ID"):
+        DatabricksSource.from_env()
+
+
+def test_evidence_ids_list_string_is_parsed():
+    ws, _ = parse_gold_row(gold_row(evidence_ids="['window-20200213T1700Z']"))
+    assert ws.evidence_ids == ["window-20200213T1700Z"]

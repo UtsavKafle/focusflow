@@ -5,7 +5,7 @@
 | Rung | Mode (`/api/health`) | How to run | Label to show |
 |---|---|---|---|
 | 1 | `live_databricks` | `.env`: `FOCUSFLOW_DATA_SOURCE=databricks`, `DATABRICKS_HOST/TOKEN/SQL_WAREHOUSE_ID`, optional `FOCUSFLOW_RUN_ID` | "Recorded wearable replay via Databricks" |
-| 2 | `saved_replay` | same as 1 plus `FOCUSFLOW_REPLAY_MODE=saved` (Gold rows from saved derived results) | "Feature replay (saved derived results)" |
+| 2 | `saved_replay` | `FOCUSFLOW_DATA_SOURCE=databricks FOCUSFLOW_REPLAY_MODE=saved FOCUSFLOW_RUN_ID=<run_id>`; no Databricks credentials. Reads `data/derived/<run_id>/feature_replay/gold.csv` (Data B: `python -m databricks.features.export_gold_fixture --run-id <run_id>`) with the same `as_of <= clock` replay as rung 1. Timestamps must be in scenario (2026) time or the calendar trigger never fires | "Feature replay (saved derived results)"; synthetic files: "SYNTHETIC feature replay (saved derived results) - not real wearable data" |
 | 3 | `synthetic_fixture` | no `.env` needed: `FOCUSFLOW_DATA_SOURCE=fixture FOCUSFLOW_FIXTURE=trigger` | "SYNTHETIC FIXTURE - not real wearable data" |
 
 Start: `uvicorn backend.app.main:app --port 8000`. Fresh clone (no credentials): `pip install -r requirements.txt && pytest -q && uvicorn backend.app.main:app`.

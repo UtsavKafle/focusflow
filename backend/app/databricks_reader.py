@@ -3,10 +3,12 @@
 - Every Gold row passes WearableState.model_validate at the boundary. On failure: emit pipeline.error and keep the
   last good state labeled stale. No rows yet -> latest() is None (API answers 503 STATE_NOT_READY).
 - Never serve a stale row as fresh: if the newest row stops advancing while replay runs, mark stale and show lag.
-SQL: databricks/sql/gold_latest.sql (Data B) when present, else the inline default below (same columns)."""
+SQL: databricks/sql/gold_latest.sql (Data B) when present, else the inline default below (same columns).
+Feature replay (FOCUSFLOW_REPLAY_MODE=saved): the same reader over Data B's exported CSV
+(data/derived/<run_id>/feature_replay/gold.csv) via SavedGoldConnection; no Databricks credentials needed."""
 from __future__ import annotations
 
-import json, os, pathlib, time, uuid
+import ast, json, os, pathlib, time, uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Optional
 
@@ -16,7 +18,8 @@ from contracts.models import ReplayStatus, WearableState
 from backend.app.sources import WearableSnapshot
 from backend.app.trigger import MinuteLoad
 
-SQL_DIR = pathlib.Path(__file__).resolve().parents[2] / "databricks" / "sql"
+ROOT = pathlib.Path(__file__).resolve().parents[2]
+SQL_DIR = ROOT / "databricks" / "sql"
 WS_FIELDS = ("window_start", "window_end", "heart_rate_bpm", "physiological_load", "activity_level",
              "estimated_rest_minutes", "target_rest_minutes", "recovery_score", "baseline_id", "baseline_cutoff",
              "evidence_ids")
@@ -37,7 +40,8 @@ def parse_gold_row(row: dict) -> tuple[WearableState, dict]:
     if quality is None:
         raise ValueError("quality_json is null")
     data = {f: _iso(row.get(f)) for f in WS_FIELDS if f in row}
-    data["evidence_ids"] = list(row.get("evidence_ids") or [])
+    ev = row.get("evidence_ids")
+    data["evidence_ids"] = list(ast.literal_eval(ev) if isinstance(ev, str) else ev or [])  # CSV: "['window-…']"
     if data.get("target_rest_minutes") is None:
         data.pop("target_rest_minutes", None)
     ws = WearableState.model_validate({**data, "quality": quality})
@@ -82,22 +86,32 @@ class DatabricksSource:
 
     @classmethod
     def from_env(cls) -> "DatabricksSource":
-        host, token, wh = (os.getenv(k, "") for k in ("DATABRICKS_HOST", "DATABRICKS_TOKEN", "DATABRICKS_SQL_WAREHOUSE_ID"))
-        if not (host and token and wh):
-            raise RuntimeError("FOCUSFLOW_DATA_SOURCE=databricks needs DATABRICKS_HOST/TOKEN/SQL_WAREHOUSE_ID in .env")
+        mode = "saved_replay" if os.getenv("FOCUSFLOW_REPLAY_MODE", "live").split("#")[0].strip() == "saved" else "live_databricks"
+        run_id = os.getenv("FOCUSFLOW_RUN_ID", "").split("#")[0].strip() or None
+        if mode == "saved_replay":
+            if not run_id:
+                raise RuntimeError("FOCUSFLOW_REPLAY_MODE=saved needs FOCUSFLOW_RUN_ID (reads data/derived/<run_id>/feature_replay/gold.csv)")
+            conn = SavedGoldConnection(ROOT / "data" / "derived" / run_id / "feature_replay" / "gold.csv")
+            connect, table = (lambda: conn), str(conn.path)
+        else:
+            host, token, wh = (os.getenv(k, "") for k in ("DATABRICKS_HOST", "DATABRICKS_TOKEN", "DATABRICKS_SQL_WAREHOUSE_ID"))
+            if not (host and token and wh):
+                raise RuntimeError("FOCUSFLOW_DATA_SOURCE=databricks needs DATABRICKS_HOST/TOKEN/SQL_WAREHOUSE_ID in .env")
 
-        def connect():
-            from databricks import sql  # lazy: fixture mode never needs the connector
-            return sql.connect(server_hostname=host.replace("https://", "").rstrip("/"),
-                               http_path=f"/sql/1.0/warehouses/{wh}", access_token=token)
-        table = f"{os.getenv('DATABRICKS_CATALOG', 'focusflow')}.{os.getenv('DATABRICKS_SCHEMA', 'main')}.gold_wearable_state"
-        mode = "saved_replay" if os.getenv("FOCUSFLOW_REPLAY_MODE", "live") == "saved" else "live_databricks"
+            def connect():
+                from databricks import sql  # lazy: fixture mode never needs the connector
+                return sql.connect(server_hostname=host.replace("https://", "").rstrip("/"),
+                                   http_path=f"/sql/1.0/warehouses/{wh}", access_token=token)
+            table = f"{os.getenv('DATABRICKS_CATALOG', 'focusflow')}.{os.getenv('DATABRICKS_SCHEMA', 'main')}.gold_wearable_state"
         replay, bookmark = (_replay_from_env() if mode == "live_databricks" else (None, None))
         bookmark = bookmark or _bookmark_from_env()
-        src = cls(connect, table, os.getenv("FOCUSFLOW_RUN_ID") or None, mode, replay=replay,
+        src = cls(connect, table, run_id, mode, replay=replay,
                   scenario_id=os.getenv("FOCUSFLOW_FIXTURE", "trigger").split()[0], default_bookmark=bookmark)
-        if os.getenv("FOCUSFLOW_REPLAY_SOURCE_KIND", "").split("#")[0].strip().startswith("synthetic"):
-            src.label = "SYNTHETIC mock wearable replay via Databricks - not real wearable data"
+        synthetic = conn.synthetic if mode == "saved_replay" else \
+            os.getenv("FOCUSFLOW_REPLAY_SOURCE_KIND", "").split("#")[0].strip().startswith("synthetic")
+        if synthetic:
+            src.label = "SYNTHETIC mock wearable replay via Databricks - not real wearable data" if mode == "live_databricks" \
+                else "SYNTHETIC feature replay (saved derived results) - not real wearable data"
         return src
 
     # ---- SQL ----
@@ -251,6 +265,45 @@ class DatabricksSource:
             self._good = None
         else:  # Data A semantics: new run id + checkpoint, old audit files kept, replay restarts from the bookmark
             self._follow(self.replay.reset())
+
+
+class SavedGoldConnection:
+    """Feature replay: Data B's exported Gold CSV behind the DB-API calls DatabricksSource makes, so the saved rung
+    reads exactly like live Databricks (as_of <= clock, run_id, bounded history). Loaded once; rows keep CSV text
+    for quality_json / evidence_ids and parse_gold_row validates them like any Gold row."""
+    TIME_COLS = ("as_of", "window_start", "window_end", "baseline_cutoff")
+
+    def __init__(self, path: pathlib.Path):
+        import pandas as pd
+        self.path = pathlib.Path(path)
+        if not self.path.exists():
+            raise RuntimeError(f"feature replay file not found: {self.path} (run databricks.features.export_gold_fixture)")
+        df = pd.read_csv(self.path, dtype={"participant_id": str, "run_id": str, "quality_json": str, "evidence_ids": str})
+        for c in self.TIME_COLS:
+            df[c] = pd.to_datetime(df[c], utc=True)
+        df = df.sort_values("window_end", kind="stable")
+        df = df.astype(object).where(df.notna(), None)  # NaN / NaT -> None (missing values keep their reasons)
+        self.rows = [{k: (v.to_pydatetime() if isinstance(v, pd.Timestamp) else v) for k, v in r.items()}
+                     for r in df.to_dict("records")]
+        self.synthetic = bool(self.rows) and all(r.get("source_kind") == "synthetic_fixture" for r in self.rows)
+        self.description: list = []
+        self._out: list[dict] = []
+
+    def cursor(self): return self
+    def __enter__(self): return self
+    def __exit__(self, *a): return False
+
+    def execute(self, sql: str, params: dict) -> None:
+        rows = [r for r in self.rows if params.get("run_id") in (None, r["run_id"])]
+        if "start" in params:  # history(): window_end in (start, end], oldest first
+            self._out = [r for r in rows if params["start"] < r["window_end"] <= params["end"]][:2000]
+        else:  # latest row published by the replay clock
+            clock = params.get("clock")
+            self._out = [r for r in rows if clock is None or r["as_of"] <= clock][-1:]
+        self.description = [(k,) for k in (self.rows[0] if self.rows else {})]
+
+    def fetchall(self) -> list[tuple]:
+        return [tuple(r.values()) for r in self._out]
 
 
 def _replay_from_env() -> tuple[Any, Optional[datetime]]:

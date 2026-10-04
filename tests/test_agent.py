@@ -61,10 +61,10 @@ def test_no_provider_uses_grounded_fallback(monkeypatch):
 
 def _grounded_text():
     def final(prov):
-        import json
+        import json, re
         latest = {}
-        for content in prov.results.values():
-            r = json.loads(content)
+        for content in prov.results.values():  # strip _for_model's "(Mon 11:00 PM <tz>)" local-time annotations
+            r = json.loads(re.sub(r'(\d{4}-\d{2}-\d{2}T[\d:]+Z) \([^)]*\)', r'\1', content))
             if "wearable" in r: latest["get_current_student_state"] = r
             elif "valid_minutes" in r: latest["compare_to_baseline"] = r
             elif "estimated_rest_minutes" in r and "metric" not in r: latest["get_recent_rest"] = r
