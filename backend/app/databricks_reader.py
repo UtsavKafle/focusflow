@@ -247,9 +247,37 @@ class DatabricksSource:
         """Gold reads follow the controller's run; the previous run's state is never shown as this run's."""
         self.run_id, self._good, self._last_poll = run_id, None, 0.0
 
+    def _default_clock(self) -> Optional[datetime]:
+        """No bookmark was ever configured for this run (no FOCUSFLOW_REPLAY_SCENARIO_START, no explicit
+        bookmark on start()). Without this, clock() stays None forever and poll() reads the newest Gold
+        row on every single poll -- for a finite replayed run that row never changes, so the UI looks
+        frozen even though every request returns 200. Default to 24h after the run's earliest Gold row
+        (clear of baseline_warmup) instead. Returns None (leaving the old "read the newest row" behavior)
+        if run_id is unset or the lookup itself fails -- this is a best-effort default, never a hard error."""
+        if not self.run_id:
+            return None
+        try:
+            rows = self._query(f"SELECT {COLS} FROM {self.table} WHERE run_id = :run_id ORDER BY window_end ASC LIMIT 1",
+                               {"run_id": self.run_id, "earliest": True})
+        except Exception:
+            return None
+        if not rows or rows[0].get("window_end") is None:
+            return None
+        we = rows[0]["window_end"]
+        if isinstance(we, str):
+            we = datetime.fromisoformat(we.replace("Z", "+00:00"))
+        elif we.tzinfo is None:
+            we = we.replace(tzinfo=timezone.utc)
+        return we + timedelta(hours=24)
+
     # Replay control (task 7). Controller errors (e.g. speed not in 1/10/60/300) raise ValueError -> API 409.
     def start(self, speed: float = 1.0, bookmark: Optional[datetime] = None) -> None:
         if self.replay is None:
+            if bookmark is None and self._clock_base is None:  # never configured: don't default to "newest row forever"
+                bookmark = self._default_clock()
+                if bookmark is not None:
+                    print(f"DatabricksSource: no bookmark configured for run_id={self.run_id!r}; "
+                          f"defaulting clock to {bookmark.isoformat()} (earliest Gold row + 24h warm-up)")
             if bookmark is not None and bookmark != self._clock_base:  # jump: restart the local clock there
                 self._clock_base, self._clock_elapsed, self._last_poll = bookmark, 0.0, 0.0
             elif self._state == "running":  # speed change keeps the current position
@@ -315,7 +343,9 @@ class SavedGoldConnection:
 
     def execute(self, sql: str, params: dict) -> None:
         rows = [r for r in self.rows if params.get("run_id") in (None, r["run_id"])]
-        if "start" in params:  # history(): window_end in (start, end], oldest first
+        if params.get("earliest"):  # _default_clock(): earliest row for this run (self.rows sorted ascending)
+            self._out = rows[:1]
+        elif "start" in params:  # history(): window_end in (start, end], oldest first
             self._out = [r for r in rows if params["start"] < r["window_end"] <= params["end"]][:2000]
         else:  # latest row published by the replay clock
             clock = params.get("clock")

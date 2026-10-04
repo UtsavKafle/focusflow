@@ -1,5 +1,6 @@
 """Gold row -> WearableState boundary (integrator tasks 6 + 8), using a fake SQL connection (no credentials)."""
 import json
+import time
 from datetime import datetime, timezone
 
 import pytest
@@ -394,6 +395,45 @@ def test_connection_recovers_once_a_poll_succeeds_again():
     s._last_poll = 0.0  # force latest() to poll again immediately instead of waiting POLL_SECONDS
     snap = s.latest()
     assert not snap.stale and snap.wearable.window_end == T(3, 21)
+
+
+def test_start_without_bookmark_defaults_past_warmup_not_the_newest_row():
+    # Without this, clock() stays None forever and poll() reads the newest Gold row on every single
+    # poll -- for a finite replayed run that row never changes, so the UI looks frozen even though every
+    # request returns 200. The default must come from the run's earliest row (+24h warm-up), not whatever
+    # row happens to be last.
+    early = gold_row(window_start=datetime(2026, 10, 9, 16, 0, tzinfo=timezone.utc),
+                      window_end=datetime(2026, 10, 9, 16, 1, tzinfo=timezone.utc),
+                      as_of=datetime(2026, 10, 9, 16, 1, tzinfo=timezone.utc))
+    late = gold_row(window_start=datetime(2026, 10, 13, 3, 56, tzinfo=timezone.utc),
+                     window_end=datetime(2026, 10, 13, 3, 57, tzinfo=timezone.utc),
+                     as_of=datetime(2026, 10, 13, 3, 57, tzinfo=timezone.utc))
+    s = DatabricksSource(lambda: FakeConn([early, late]), "focusflow.main.gold_wearable_state", run_id="run-1")
+    assert s.clock() is None  # nothing configured yet -- this is the pre-start state, not the bug
+    s.start(speed=60)
+    assert s.clock() is not None, "clock() must not stay None after start() -- that makes poll() read the newest row forever"
+    assert s._clock_base == early["window_end"] + timedelta(hours=24)
+    assert s._clock_base != late["window_end"]
+
+
+def test_start_without_bookmark_advances_over_time_not_frozen():
+    early = gold_row(window_start=datetime(2026, 10, 9, 16, 0, tzinfo=timezone.utc),
+                      window_end=datetime(2026, 10, 9, 16, 1, tzinfo=timezone.utc),
+                      as_of=datetime(2026, 10, 9, 16, 1, tzinfo=timezone.utc))
+    s = DatabricksSource(lambda: FakeConn([early]), "focusflow.main.gold_wearable_state", run_id="run-1")
+    s.start(speed=60)
+    c1 = s.clock()
+    time.sleep(0.05)
+    c2 = s.clock()
+    assert c2 > c1, "the local replay clock must advance over wall-clock time, not sit frozen at one value"
+
+
+def test_start_without_run_id_or_rows_falls_back_to_old_behavior():
+    # No run_id to scope a lookup to -- _default_clock() must return None (not raise), leaving clock()
+    # at None so the pre-existing "read the newest row" fallback still applies.
+    s = DatabricksSource(lambda: FakeConn([gold_row()]), "focusflow.main.gold_wearable_state")
+    s.start(speed=60)
+    assert s.clock() is None
 
 
 def test_fixture_mode_unaffected_by_databricks_timeout_changes(monkeypatch):

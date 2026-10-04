@@ -76,7 +76,7 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button tone="primary" disabled={busy} onClick={() => void run(() => ff.replayStart(selected))}>
+          <Button tone="primary" disabled={busy} onClick={() => void run(() => ff.replayStart(selected, BOOKMARKS[0]?.at))}>
             Play from start
           </Button>
           <Button glass disabled={busy || replay?.state !== 'running'} onClick={() => void run(ff.replayPause)}>
