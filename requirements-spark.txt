@@ -1,0 +1,4 @@
+# Local Spark smoke testing only (Databricks runtimes already ship these). Needs Java 11 or 17.
+# Versions match Databricks Runtime 15.x / serverless (Spark 3.5, Delta 3.2).
+pyspark==3.5.3
+delta-spark==3.2.1
