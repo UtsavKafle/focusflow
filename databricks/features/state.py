@@ -31,6 +31,7 @@ class GoldConfig:
     min_rest_run_minutes: int = 30
     min_overnight_coverage: float = 0.7
     target_rest_minutes: int = 480
+    acc_unavailable_reason: str = "acc_unavailable"   # override to "acc_units_unverified" when ACC was excluded by quality policy
 
 
 def _clamp01(x: float) -> float:
@@ -128,7 +129,7 @@ def build_gold(silver_z: pd.DataFrame, *, run_id: str, participant_id: str, sour
         # activity
         act = None
         if acc_cov < cfg.min_signal_coverage or _nn(r.acc_dyn_mean_g) is None:
-            reasons["activity_level"] = "acc_unavailable"
+            reasons["activity_level"] = cfg.acc_unavailable_reason
         else:
             act = round(_clamp01(r.acc_dyn_mean_g / cfg.activity_full_g), 4)
         confound = bool(act is not None and act >= cfg.activity_confound_level)

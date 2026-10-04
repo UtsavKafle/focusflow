@@ -11,3 +11,7 @@ data/raw/
 data/derived/
 .DS_Store
 data/mock/
+.smoke/
+spark-warehouse/
+metastore_db/
+derby.log
