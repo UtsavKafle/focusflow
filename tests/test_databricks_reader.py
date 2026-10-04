@@ -325,3 +325,82 @@ def test_saved_replay_needs_run_id_and_file(saved_env, monkeypatch):
 def test_evidence_ids_list_string_is_parsed():
     ws, _ = parse_gold_row(gold_row(evidence_ids="['window-20200213T1700Z']"))
     assert ws.evidence_ids == ["window-20200213T1700Z"]
+
+
+def test_evidence_ids_numpy_array_is_parsed():
+    # Live Databricks rows (ARRAY<STRING>) come back as a numpy array once pyarrow is installed, not a
+    # Python list or a CSV-style string. `ev or []` used to crash on this with numpy's ambiguous-truth-
+    # value error before ever reaching the isinstance(str) branch.
+    import numpy as np
+    ws, _ = parse_gold_row(gold_row(evidence_ids=np.array(["window-0042", "rest-0002"])))
+    assert ws.evidence_ids == ["window-0042", "rest-0002"]
+
+
+# ---- /api/state must never hang on a slow or stopped warehouse (see docs/decisions.md) ----
+# These use a fake connect/cursor that raises instead of actually waiting out a real connector timeout
+# (that behavior, and the exact knobs that bound it, were verified by hand against the real warehouse).
+
+
+def test_slow_connect_keeps_last_good_marked_stale_and_drops_connection():
+    s = src([gold_row()])
+    assert not s.latest().stale
+    def boom():
+        raise TimeoutError("simulated: sql.connect() gave up after _socket_timeout")
+    s._conn, s._connect = None, boom
+    s.poll()
+    snap = s.latest()
+    assert snap.stale and snap.wearable.physiological_load == 0.81  # last good value kept, now stale
+    assert s.errors == ["DATABRICKS_QUERY_FAILED"]
+    assert s._conn is None  # dropped, not reused half-open
+
+
+def test_slow_execute_marks_stale_and_drops_connection():
+    s = src([gold_row()])
+    assert not s.latest().stale
+
+    class FailingCursor:
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def execute(self, sql, params): raise TimeoutError("simulated: query timed out")
+
+    class FailingConn:
+        def cursor(self): return FailingCursor()
+
+    s._conn = FailingConn()
+    s.poll()
+    snap = s.latest()
+    assert snap.stale and s.errors == ["DATABRICKS_QUERY_FAILED"]
+    assert s._conn is None
+
+
+def test_query_failure_with_no_prior_good_state_returns_none_not_a_hang():
+    s = src([])
+    def boom():
+        raise TimeoutError("simulated")
+    s._connect = boom
+    assert s.latest() is None  # API layer turns this into 503 STATE_NOT_READY, never a hang
+    assert s.errors == ["DATABRICKS_QUERY_FAILED"]
+
+
+def test_connection_recovers_once_a_poll_succeeds_again():
+    s = src([gold_row()])
+    assert s.latest().wearable.physiological_load == 0.81
+    def boom():
+        raise TimeoutError("simulated")
+    s._conn, s._connect = None, boom
+    s.poll()
+    assert s.latest().stale
+    s._connect = lambda: FakeConn([gold_row(minute=21)])  # warehouse "wakes up"
+    s._last_poll = 0.0  # force latest() to poll again immediately instead of waiting POLL_SECONDS
+    snap = s.latest()
+    assert not snap.stale and snap.wearable.window_end == T(3, 21)
+
+
+def test_fixture_mode_unaffected_by_databricks_timeout_changes(monkeypatch):
+    for k in ("DATABRICKS_HOST", "DATABRICKS_TOKEN", "DATABRICKS_SQL_WAREHOUSE_ID"):
+        monkeypatch.delenv(k, raising=False)
+    from fastapi.testclient import TestClient
+    from backend.app.main import create_app
+    c = TestClient(create_app("trigger", data_source="fixture"))
+    assert c.get("/api/health").json()["ok"] is True
+    assert c.get("/api/state").status_code == 200

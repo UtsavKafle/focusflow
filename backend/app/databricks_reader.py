@@ -20,6 +20,12 @@ from backend.app.trigger import MinuteLoad
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 SQL_DIR = ROOT / "databricks" / "sql"
+# databricks-sql-connector defaults both the per-socket timeout and the total retry duration to 900s
+# (15 minutes, to tolerate a cold cluster start). A request thread waiting on /api/state cannot wait
+# that long: a stopped SQL warehouse (auto_stop_mins is commonly 10) makes every poll after an idle
+# period retry silently for up to 15 minutes with no error, which looks exactly like a hang. Bound both
+# knobs so a slow or stopped warehouse fails fast instead.
+CONNECT_TIMEOUT_SECONDS = 30.0
 WS_FIELDS = ("window_start", "window_end", "heart_rate_bpm", "physiological_load", "activity_level",
              "estimated_rest_minutes", "target_rest_minutes", "recovery_score", "baseline_id", "baseline_cutoff",
              "evidence_ids")
@@ -41,7 +47,12 @@ def parse_gold_row(row: dict) -> tuple[WearableState, dict]:
         raise ValueError("quality_json is null")
     data = {f: _iso(row.get(f)) for f in WS_FIELDS if f in row}
     ev = row.get("evidence_ids")
-    data["evidence_ids"] = list(ast.literal_eval(ev) if isinstance(ev, str) else ev or [])  # CSV: "['window-…']"
+    if isinstance(ev, str):
+        ev = ast.literal_eval(ev)  # CSV: "['window-…']"
+    # `ev or []` would call bool(ev) first: fine for a Python list/None, but a live Databricks row's
+    # evidence_ids (ARRAY<STRING>) comes back as a numpy array with pyarrow installed, and numpy raises
+    # "truth value of an array with more than one element is ambiguous" instead of ever reaching `or`.
+    data["evidence_ids"] = [] if ev is None else [str(x) for x in ev]
     if data.get("target_rest_minutes") is None:
         data.pop("target_rest_minutes", None)
     ws = WearableState.model_validate({**data, "quality": quality})
@@ -101,7 +112,9 @@ class DatabricksSource:
             def connect():
                 from databricks import sql  # lazy: fixture mode never needs the connector
                 return sql.connect(server_hostname=host.replace("https://", "").rstrip("/"),
-                                   http_path=f"/sql/1.0/warehouses/{wh}", access_token=token)
+                                   http_path=f"/sql/1.0/warehouses/{wh}", access_token=token,
+                                   _socket_timeout=CONNECT_TIMEOUT_SECONDS,
+                                   _retry_stop_after_attempts_duration=CONNECT_TIMEOUT_SECONDS)
             table = f"{os.getenv('DATABRICKS_CATALOG', 'focusflow')}.{os.getenv('DATABRICKS_SCHEMA', 'main')}.gold_wearable_state"
         replay, bookmark = (_replay_from_env() if mode == "live_databricks" else (None, None))
         bookmark = bookmark or _bookmark_from_env()
@@ -116,12 +129,18 @@ class DatabricksSource:
 
     # ---- SQL ----
     def _query(self, sql: str, params: dict) -> list[dict]:
-        if self._conn is None:
-            self._conn = self._connect()
-        with self._conn.cursor() as cur:
-            cur.execute(sql, params)
-            names = [d[0] for d in cur.description]
-            return [dict(zip(names, r)) for r in cur.fetchall()]
+        try:
+            if self._conn is None:
+                self._conn = self._connect()
+            with self._conn.cursor() as cur:
+                cur.execute(sql, params)
+                names = [d[0] for d in cur.description]
+                return [dict(zip(names, r)) for r in cur.fetchall()]
+        except Exception:
+            # Connect timed out, the session died mid-query, or the warehouse reset the socket: drop the
+            # connection so the next poll opens a fresh one instead of reusing one that may be half-open.
+            self._conn = None
+            raise
 
     def _latest_sql(self, clock: bool = False) -> str:
         f = SQL_DIR / "gold_latest.sql"
@@ -155,6 +174,7 @@ class DatabricksSource:
             rows = self._query(self._latest_sql(clock is not None), params)
         except Exception as e:  # noqa: BLE001 - warehouse cold / network: keep last good, label stale
             self.on_error("DATABRICKS_QUERY_FAILED", str(e)[:300])
+            if self._good: self._good.stale = True
             return
         if not rows:
             return
