@@ -15,6 +15,7 @@ from databricks.features.bronze_adapter import bronze_to_minute_frames
 from databricks.features.minute_features import minute_features
 from databricks.features.quality_policy import QualityPolicy
 from databricks.features.state import GoldConfig, build_gold
+from databricks.streaming.bronze_contract import validate_bronze_columns
 
 BASELINE_COLUMNS = ["hr_baseline_z", "hr_z_reason", "eda_baseline_z", "eda_z_reason",
                     "baseline_id", "baseline_n_valid", "baseline_cutoff"]
@@ -97,6 +98,7 @@ def process_silver_features_batch(bronze_rows: pd.DataFrame, *, run_id: str, par
     loaded only to seed the rolling ACC mean are naturally excluded since they fall before `min_window_start`."""
     if bronze_rows is None or bronze_rows.empty:
         return pd.DataFrame()
+    validate_bronze_columns(bronze_rows, context="process_silver_features_batch's bronze_rows")
     policy = policy or QualityPolicy.for_source_kind(source_kind)
     frames = bronze_to_minute_frames(bronze_rows, policy)
     max_t = pd.Timestamp(bronze_rows["event_time"].max())

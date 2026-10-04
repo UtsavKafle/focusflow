@@ -30,21 +30,26 @@ import pandas as pd
 from delta import configure_spark_with_delta_pip
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F
-from pyspark.sql.types import DoubleType, MapType, StringType, StructField, StructType, TimestampType
+from pyspark.sql.types import DoubleType, LongType, MapType, StringType, StructField, StructType, TimestampType
 
 from databricks.features.bronze_adapter import bronze_rows_for_participant
 from databricks.streaming import gold_stream, silver_stream
 from databricks.streaming.batch import SilverStreamConfig
+from databricks.streaming.bronze_contract import BRONZE_COLUMNS, validate_bronze_columns, validate_bronze_values
 from databricks.streaming.run_demo import ensure_tables, summarize
 
 CATALOG, SCHEMA = "spark_catalog", "smoke"
 BRONZE = f"{CATALOG}.{SCHEMA}.bronze_wearable_events"
-BRONZE_SCHEMA = StructType([
-    StructField("run_id", StringType(), False), StructField("participant_id", StringType(), False),
-    StructField("source_kind", StringType(), False), StructField("event_time", TimestampType(), False),
-    StructField("signal", StringType(), False), StructField("values", MapType(StringType(), DoubleType()), False),
-    StructField("quality", StringType(), False), StructField("flag_reason", StringType(), True),
-])
+# The real 14-column contract (databricks/sql/ddl_bronze.sql) -- NO flag_reason. Field order here matches
+# BRONZE_COLUMNS so the zip() below can be built directly from it instead of a second, hand-maintained list.
+_BRONZE_TYPES = {
+    "schema_version": StringType(), "run_id": StringType(), "event_id": StringType(),
+    "participant_id": StringType(), "source_kind": StringType(), "source_timestamp": TimestampType(),
+    "event_time": TimestampType(), "ingested_at": TimestampType(), "signal": StringType(),
+    "values": MapType(StringType(), DoubleType()), "unit": StringType(), "quality": StringType(),
+    "source_file": StringType(), "source_row": LongType(),
+}
+BRONZE_SCHEMA = StructType([StructField(c, _BRONZE_TYPES[c], False) for c in BRONZE_COLUMNS])
 
 
 def local_to_utc(ts: str, tz: str, shift_days: int) -> pd.Timestamp:
@@ -164,6 +169,10 @@ def main() -> int:
     # 2026-10-09T16:00:00 round-trips as 20:00:00 UTC on this machine (EDT, UTC-4). An aware datetime
     # (tzinfo=UTC) round-trips correctly regardless of the driver's local timezone.
     rows["event_time"] = rows["event_time"].dt.tz_convert("UTC")
+    for c in ("source_timestamp", "ingested_at"):
+        rows[c] = rows[c].dt.tz_convert("UTC")
+    validate_bronze_columns(rows, context="local Bronze rows")
+    validate_bronze_values(rows, context="local Bronze rows")
     print(f"bronze rows: {len(rows):,} ({rows['signal'].value_counts().to_dict()}) window [{st}, {en})", flush=True)
 
     # The mock is generated at --acc-hz (8, not the real dataset's 32), and --acc-stride further thins it;
@@ -186,9 +195,13 @@ def main() -> int:
         chunk = rows.iloc[bounds[i]:bounds[i + 1]]
         if chunk.empty:
             continue
-        recs = list(zip(chunk["run_id"], chunk["participant_id"], chunk["source_kind"],
-                        chunk["event_time"].dt.to_pydatetime(), chunk["signal"], chunk["values"],
-                        chunk["quality"], chunk["flag_reason"].where(chunk["flag_reason"].notna(), None)))
+        def col(c):
+            if isinstance(_BRONZE_TYPES[c], TimestampType):
+                return chunk[c].dt.to_pydatetime()
+            if isinstance(_BRONZE_TYPES[c], LongType):
+                return chunk[c].astype(int).tolist()   # not numpy.int64 -- Spark's row verifier wants a plain int
+            return chunk[c]
+        recs = list(zip(*(col(c) for c in BRONZE_COLUMNS)))
         spark.createDataFrame(recs, BRONZE_SCHEMA).write.format("delta").mode("append").saveAsTable(BRONZE)
         print(f"\n--- appended chunk {i + 1}/{a.chunks}: {len(chunk):,} rows, up to {chunk['event_time'].max()} UTC ---", flush=True)
         pass_once(spark, a.run_id, a.participant, a.source_kind, ckpt, f"chunk {i + 1}", cfg)

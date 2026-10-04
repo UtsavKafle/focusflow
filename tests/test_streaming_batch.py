@@ -21,16 +21,31 @@ BCFG = BaselineConfig(warmup_minutes=360, refresh_minutes=10)
 MOCK_POLICY = QualityPolicy.for_source_kind("synthetic_fixture")
 
 
-def to_bronze(hr: pd.DataFrame, eda: pd.DataFrame, acc: pd.DataFrame) -> pd.DataFrame:
+SIGNAL_UNITS = {"hr": "bpm", "eda": "microsiemens", "acc": "unverified"}
+
+
+def to_bronze(hr: pd.DataFrame, eda: pd.DataFrame, acc: pd.DataFrame, *, run_id: str = "r1",
+              participant_id: str = "p1", source_kind: str = "synthetic_fixture") -> pd.DataFrame:
+    """Bronze-shaped rows matching the real 14-column contract (databricks.streaming.bronze_contract)."""
     parts = []
     for d, sig, keys in ((hr, "hr", ["value"]), (eda, "eda", ["value"]), (acc, "acc", ["x", "y", "z"])):
         if d.empty:
             continue
+        n = len(d)
         p = d[["event_time"]].copy()
+        p["schema_version"] = "1.0"
+        p["run_id"] = run_id
+        p["event_id"] = [f"{participant_id}-{sig}-{i:09d}" for i in range(n)]
+        p["participant_id"] = participant_id
+        p["source_kind"] = source_kind
+        p["source_timestamp"] = p["event_time"]
+        p["ingested_at"] = p["event_time"]
         p["signal"] = sig
         p["values"] = d[keys].to_dict("records")
+        p["unit"] = SIGNAL_UNITS[sig]
         p["quality"] = "valid"
-        p["flag_reason"] = None
+        p["source_file"] = f"{sig.upper()}_{participant_id}.csv"
+        p["source_row"] = range(1, n + 1)
         parts.append(p)
     return pd.concat(parts, ignore_index=True)
 
@@ -271,3 +286,15 @@ def test_gold_columns_constant_matches_actual_output(signals):
     sil = merge_baseline_update(feats, process_silver_baseline_batch(feats, baseline_cfg=BCFG))
     out = process_gold_batch(sil, run_id="r1", participant_id="p1", source_kind="synthetic_fixture")
     assert list(out.columns) == GOLD_COLUMNS
+
+
+def test_silver_read_validates_against_bronze_contract(signals):
+    """The Silver read (process_silver_features_batch, called from silver_stream.py's foreachBatch) must
+    fail closed with a clear error if the Bronze rows it's handed don't match the real 14-column contract
+    (databricks.streaming.bronze_contract) -- e.g. if a future Data A schema change silently drops a column
+    this pipeline depends on, instead of a confusing KeyError three functions deeper."""
+    hr, eda, acc, hz = signals
+    bronze = to_bronze(hr, eda, acc).drop(columns=["unit"])
+    with pytest.raises(ValueError, match="unit"):
+        process_silver_features_batch(bronze, run_id="r1", participant_id="p1", source_kind="synthetic_fixture",
+                                      cfg=SilverStreamConfig(expected_hz=hz))

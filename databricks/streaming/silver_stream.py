@@ -86,8 +86,11 @@ def make_foreach_batch(spark: SparkSession, *, catalog: str, schema: str, run_id
         # their data once the cutoff finally passes them, and they're silently finalized with PARTIAL
         # coverage instead of correctly delayed (caught empirically against local Spark: a 1-minute-short
         # margin gave 2/3 or 1/6 coverage, not 0, so this is easy to miss without comparing against the
-        # pandas baseline -- scripts/local_spark_smoke.py).
-        lookback_start = min_t - pd.Timedelta(minutes=cfg.lag_minutes + 1) - pd.Timedelta(seconds=cfg.acc_lookback_seconds)
+        # pandas baseline -- scripts/local_spark_smoke.py). An extra minute of slack is added on top of the
+        # derived minimum: `min_t` is this batch's OWN earliest event, not necessarily exactly equal to the
+        # previous batch's max event time (ties/row-index chunk boundaries can land a few seconds apart
+        # either way), so treat the derived bound as a floor, not an exact value.
+        lookback_start = min_t - pd.Timedelta(minutes=cfg.lag_minutes + 2) - pd.Timedelta(seconds=cfg.acc_lookback_seconds)
         lookback_pdf = localize_utc_columns((
             spark.read.table(bronze_table)
             .filter((F.col("run_id") == run_id) & (F.col("participant_id") == participant_id))
