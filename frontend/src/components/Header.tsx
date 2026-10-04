@@ -1,7 +1,7 @@
 import { Activity, Clock, SlidersHorizontal } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import type { SseStatus } from '../hooks/useFocusFlow'
-import { MODE_DESCRIPTION, MODE_LABEL, num, SOURCE_LABEL } from '../lib/format'
+import { MODE_LABEL, num, SOURCE_LABEL } from '../lib/format'
 import { fmtFull } from '../lib/time'
 import type { Health, ReplayStatus, StudentState } from '../types'
 import { GlassSurface } from './ui'
@@ -83,13 +83,16 @@ export function Header(props: {
           </div>
         </div>
 
-        {/* Mode + data source: always visible, never hidden behind a menu. */}
-        <div className="header-source text-right leading-tight" title={health?.label ?? undefined}>
+        {/* Mode + data source: always visible, never hidden behind a menu. Renders health.label exactly
+            (never a hardcoded per-mode string) -- that's the one place the honest synthetic/recorded
+            wording is computed, and a hardcoded fallback here could silently show "Recorded" for
+            synthetic data. */}
+        <div className="header-source text-right leading-tight">
           <GlassSurface variant="clear" className={`mode-badge ${modeKnown ? MODE_TONE[mode] : 'text-secondary'}`}>
             {modeKnown ? MODE_LABEL[mode] : 'MODE UNKNOWN'}
           </GlassSurface>
           <div className="mt-0.5 text-[11px] text-secondary">
-            <span className="source-description">{modeKnown ? `${MODE_DESCRIPTION[mode]} · ` : ''}</span>data: {source ? (SOURCE_LABEL[source] ?? source) : 'unknown'}
+            <span className="source-description">{health?.label ? `${health.label} · ` : ''}</span>data: {source ? (SOURCE_LABEL[source] ?? source) : 'unknown'}
           </div>
         </div>
 

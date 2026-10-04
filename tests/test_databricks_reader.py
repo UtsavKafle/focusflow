@@ -436,6 +436,26 @@ def test_start_without_run_id_or_rows_falls_back_to_old_behavior():
     assert s.clock() is None
 
 
+def test_poll_auto_pauses_at_end_of_data_and_exposes_data_end_in_status():
+    # Without this, the replay clock keeps advancing past the run's last Gold row forever: lag_seconds
+    # grows without bound and the UI looks frozen on the last row even though /api/state keeps returning
+    # 200. Once past the end, poll() must pause and the clock must stop advancing.
+    last = gold_row(window_start=datetime(2026, 10, 13, 3, 56, tzinfo=timezone.utc),
+                     window_end=datetime(2026, 10, 13, 3, 57, tzinfo=timezone.utc),
+                     as_of=datetime(2026, 10, 13, 3, 57, tzinfo=timezone.utc))
+    s = DatabricksSource(lambda: FakeConn([last]), "focusflow.main.gold_wearable_state", run_id="run-1")
+    s.start(speed=60, bookmark=datetime(2026, 10, 13, 4, 30, tzinfo=timezone.utc))  # already past the end
+    assert s._state == "running"
+    s.poll()
+    assert s._state == "paused", "must auto-pause once the clock passes the run's last Gold row"
+    st = s.status("run-1")
+    assert st.data_end_time == last["window_end"]
+    assert st.state == "paused"
+    c1 = s.clock()
+    time.sleep(0.05)
+    assert s.clock() == c1, "clock must stay pinned after auto-pause, not keep advancing past the end"
+
+
 def test_fixture_mode_unaffected_by_databricks_timeout_changes(monkeypatch):
     for k in ("DATABRICKS_HOST", "DATABRICKS_TOKEN", "DATABRICKS_SQL_WAREHOUSE_ID"):
         monkeypatch.delenv(k, raising=False)

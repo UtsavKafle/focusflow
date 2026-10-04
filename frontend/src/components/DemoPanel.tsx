@@ -15,6 +15,11 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
   const options = SCENARIOS.includes(selected) ? SCENARIOS : [selected, ...SCENARIOS]
   const lag = num(replay?.lag_seconds)
   const speed = num(replay?.speed)
+  const atEnd =
+    replay?.state === 'paused' &&
+    replay?.data_end_time != null &&
+    replay?.published_time != null &&
+    new Date(replay.published_time) >= new Date(replay.data_end_time)
 
   const run = async (fn: () => Promise<void>) => {
     setBusy(true)
@@ -39,12 +44,19 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
       onClose={props.onClose}
     >
       <div className="space-y-5">
+        {atEnd && (
+          <div className="rounded-xl neu-notice neu-notice--warn p-3 text-sm font-semibold text-warning">
+            End of replay data -- reached the last recorded minute for this run. Jump to an earlier
+            bookmark or Reset to replay from the start.
+          </div>
+        )}
         <dl className="grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3 rounded-xl neu-inset p-4">
-          {stat('Status', replay?.state ?? 'unknown')}
+          {stat('Status', atEnd ? 'paused (end of data)' : (replay?.state ?? 'unknown'))}
           {stat('Speed', speed === null ? 'unknown' : `${speed}x`)}
           {stat('Pipeline lag', lag === null ? 'unknown' : `${lag.toFixed(0)} s`)}
           {stat('Published up to', replay?.published_time ? fmtDayTime(replay.published_time, tz) : 'unknown')}
           {stat('Processed up to', replay?.processed_time ? fmtDayTime(replay.processed_time, tz) : 'unknown')}
+          {stat('Data ends', replay?.data_end_time ? fmtDayTime(replay.data_end_time, tz) : 'unknown')}
           {stat('Run', replay?.run_id ?? health?.run_id ?? 'none')}
         </dl>
 

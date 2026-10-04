@@ -5,6 +5,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+export type DataEndTime = string | null;
 export type LagSeconds = number | null;
 export type Mode = "live_databricks" | "saved_replay" | "synthetic_fixture";
 export type ProcessedTime = string | null;
@@ -14,6 +15,7 @@ export type Speed = number;
 export type State = "idle" | "running" | "paused";
 
 export interface ReplayStatus {
+  data_end_time?: DataEndTime;
   lag_seconds?: LagSeconds;
   mode: Mode;
   processed_time?: ProcessedTime;

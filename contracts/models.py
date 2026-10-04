@@ -302,6 +302,7 @@ class ReplayStatus(_Base):
     published_time: Optional[datetime] = None
     processed_time: Optional[datetime] = None
     lag_seconds: Optional[float] = None
+    data_end_time: Optional[datetime] = None
 
 
 SSEType = Literal["state.updated", "replay.updated", "agent.started", "agent.tool_result",

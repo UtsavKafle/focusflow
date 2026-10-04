@@ -80,6 +80,7 @@ class DatabricksSource:
         self._good: Optional[WearableSnapshot] = None
         self._good_changed_at = 0.0
         self._state, self._speed = "idle", 1.0
+        self._data_end_time: Optional[datetime] = None  # cached MAX(window_end) for the run; see _data_end()
         # Local replay clock (no controller): Gold holds the whole run, so reads stop at bookmark + elapsed * speed.
         self._clock_base, self._clock_started, self._clock_elapsed = default_bookmark, 0.0, 0.0
         # Task 7: Data A's simulator.replay.ReplayController (None -> local replay state only, e.g. feature replay).
@@ -169,6 +170,16 @@ class DatabricksSource:
         clock = self.clock()
         if clock is None and self.replay is not None and self.replay.state == "idle":
             return  # live replay not started: nothing of this run is published yet
+        if self.replay is None and self._state == "running" and clock is not None:
+            data_end = self._data_end()
+            if data_end is not None and clock > data_end:
+                # Finite replayed run: without this the clock keeps advancing past the last Gold row
+                # forever, lag_seconds grows without bound, and the UI looks frozen on the last row while
+                # /api/state keeps returning 200. Pin the clock at the end instead.
+                self.pause()
+                print(f"DatabricksSource: replay clock {clock.isoformat()} passed data end "
+                      f"{data_end.isoformat()} for run_id={self.run_id!r}; auto-paused")
+                clock = self.clock()
         params = ({"run_id": self.run_id} if self.run_id else {}) | ({"clock": clock} if clock else {})
         try:
             rows = self._query(self._latest_sql(clock is not None), params)
@@ -237,7 +248,8 @@ class DatabricksSource:
         g, clock = self._good, self.clock()
         return ReplayStatus(run_id=run_id, mode=self.mode, state=self.state, speed=self.speed,
                             published_time=clock, processed_time=g.as_of if g else None,
-                            lag_seconds=max(0.0, (clock - g.as_of).total_seconds()) if g and clock else None)
+                            lag_seconds=max(0.0, (clock - g.as_of).total_seconds()) if g and clock else None,
+                            data_end_time=self._data_end())
 
     def _processed_time(self, run_id: str) -> Optional[datetime]:
         g = self._good
@@ -269,6 +281,27 @@ class DatabricksSource:
         elif we.tzinfo is None:
             we = we.replace(tzinfo=timezone.utc)
         return we + timedelta(hours=24)
+
+    def _data_end(self) -> Optional[datetime]:
+        """MAX(window_end) for this run, cached: a finished replay's Gold table doesn't grow mid-run, so
+        this is looked up once and reused rather than re-queried every poll. Used so the local replay
+        clock can stop advancing at the end of the run instead of running past it forever (lag_seconds
+        would otherwise grow without bound and the UI would look frozen on the last row)."""
+        if self._data_end_time is not None or not self.run_id:
+            return self._data_end_time
+        try:
+            rows = self._query(self._latest_sql(clock=False), {"run_id": self.run_id})
+        except Exception:
+            return None
+        if not rows or rows[0].get("window_end") is None:
+            return None
+        we = rows[0]["window_end"]
+        if isinstance(we, str):
+            we = datetime.fromisoformat(we.replace("Z", "+00:00"))
+        elif we.tzinfo is None:
+            we = we.replace(tzinfo=timezone.utc)
+        self._data_end_time = we
+        return self._data_end_time
 
     # Replay control (task 7). Controller errors (e.g. speed not in 1/10/60/300) raise ValueError -> API 409.
     def start(self, speed: float = 1.0, bookmark: Optional[datetime] = None) -> None:

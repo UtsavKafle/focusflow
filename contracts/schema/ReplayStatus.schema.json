@@ -1,6 +1,19 @@
 {
   "additionalProperties": false,
   "properties": {
+    "data_end_time": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Data End Time"
+    },
     "lag_seconds": {
       "anyOf": [
         {

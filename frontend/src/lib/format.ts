@@ -59,11 +59,4 @@ export const TOOL_LABEL: Record<string, string> = {
   get_schedule_change: 'Looked up the saved schedule change',
 }
 
-/** Honest wording for the active mode (docs/demo-runbook.md fallback ladder). */
-export const MODE_DESCRIPTION: Record<Mode, string> = {
-  synthetic_fixture: 'Synthetic fixture, not real wearable data',
-  live_databricks: 'Recorded wearable replay via Databricks',
-  saved_replay: 'Feature replay (saved derived results)',
-}
-
 export const reasonLabel = (code: string) => REASON_LABEL[code] ?? humanize(code)
