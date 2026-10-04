@@ -436,6 +436,23 @@ def test_start_without_run_id_or_rows_falls_back_to_old_behavior():
     assert s.clock() is None
 
 
+def test_poll_interval_is_faster_while_running_than_paused():
+    # At 300x, polling only every POLL_SECONDS=5s means 25 data-minutes pass between card updates --
+    # looks like a jump, not a smooth replay. Running must poll close to every second; paused/idle keeps
+    # the slower interval (no point hammering Databricks when nothing is advancing).
+    s = src([gold_row()])
+    stale_last_poll = time.monotonic() - 1.5
+    s._state = "paused"
+    s._last_poll = stale_last_poll
+    s.latest()
+    assert s._last_poll == stale_last_poll, "paused: 1.5s elapsed must not trigger a repoll (5s interval)"
+
+    s._state = "running"
+    s._last_poll = stale_last_poll
+    s.latest()
+    assert s._last_poll != stale_last_poll, "running: 1.5s elapsed must trigger a repoll (1s interval)"
+
+
 def test_poll_auto_pauses_at_end_of_data_and_exposes_data_end_in_status():
     # Without this, the replay clock keeps advancing past the run's last Gold row forever: lag_seconds
     # grows without bound and the UI looks frozen on the last row even though /api/state keeps returning

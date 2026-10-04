@@ -64,7 +64,9 @@ def parse_gold_row(row: dict) -> tuple[WearableState, dict]:
 
 
 class DatabricksSource:
-    POLL_SECONDS = 5.0
+    POLL_SECONDS = 5.0          # paused / idle
+    POLL_SECONDS_RUNNING = 1.0  # while replay is running: at 300x, 5s between polls is 25 data-minutes
+                                # per card update, which looks like a jump rather than a smooth replay.
     STALE_AFTER_SECONDS = 30.0
     STALE_REPLAY_SECONDS = 300.0
 
@@ -202,7 +204,8 @@ class DatabricksSource:
                                       source_kind=ex["source_kind"], wearable=ws, activity_confound=ex["activity_confound"])
 
     def latest(self) -> Optional[WearableSnapshot]:
-        if time.monotonic() - self._last_poll >= self.POLL_SECONDS:
+        interval = self.POLL_SECONDS_RUNNING if self.state == "running" else self.POLL_SECONDS
+        if time.monotonic() - self._last_poll >= interval:
             self.poll()
         if self._good is None:
             return None
