@@ -1,5 +1,5 @@
 # frontend (part-time teammate)
-React + TypeScript + Vite + Tailwind + Recharts dashboard. Handoff and priorities: `../04-frontend.md`.
+React + TypeScript + Vite + Tailwind + Recharts dashboard. Handoff and priorities: `../docs/handoffs/04-frontend.md`.
 
 ## Run against the backend (fixture mode, no credentials)
 ```bash
@@ -33,9 +33,9 @@ pick it and press Play or a Jump bookmark (fixture mode starts a new run). Other
 - Null is shown as "unavailable" with the reason from `quality.missing_reasons`; never 0, never NaN. Timeline gaps stay gaps.
 
 ## Visual system
-- `src/index.css` implements `../NEUMORPHIC_FRONTEND_STYLE_GUIDE.md`: matte gray surfaces, upper-left lighting, shared raised/inset shadows, and generous radii.
+- `src/index.css` implements `../docs/design/NEUMORPHIC_FRONTEND_STYLE_GUIDE.md`: matte gray surfaces, upper-left lighting, shared raised/inset shadows, and generous radii.
 - `src/components/ui.tsx` owns reusable cards, chips, buttons, icon wells, and keyboard-safe dialogs; feature panels use the same `neu-*` classes.
 - Text tokens are darker than the guide's decorative grays for readable contrast; muted accents indicate status, while labels and line patterns also identify states.
 - The layout stacks below 1100px, keeps the source badge visible on mobile, and contains calendar scrolling within its own keyboard-focusable region.
 - Controls have visible focus, pressed and disabled states, 44px minimum targets, and reduced-motion support. Dense calendar blocks keep their time-proportional heights.
-- `../NEUMORPHIC_APPLE_GLASS_UI_ADDENDUM.md` adds a floating glass layer for navigation, status, actions, inputs, tooltips, dialogs, and the footer; data panels stay matte. CSS provides opaque and reduced-transparency fallbacks.
+- `../docs/design/NEUMORPHIC_APPLE_GLASS_UI_ADDENDUM.md` adds a floating glass layer for navigation, status, actions, inputs, tooltips, dialogs, and the footer; data panels stay matte. CSS provides opaque and reduced-transparency fallbacks.
