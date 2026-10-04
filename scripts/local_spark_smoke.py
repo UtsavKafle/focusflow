@@ -63,7 +63,7 @@ def make_spark(work: pathlib.Path) -> SparkSession:
          .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
          .config("spark.sql.warehouse.dir", str(work / "warehouse"))
          .config("spark.sql.session.timeZone", "UTC")
-         .config("spark.driver.memory", "4g").config("spark.ui.enabled", "false")
+         .config("spark.driver.memory", "8g").config("spark.ui.enabled", "false")
          .config("spark.sql.shuffle.partitions", "4")
          .config("spark.sql.execution.arrow.pyspark.enabled", "false"))
     return configure_spark_with_delta_pip(b).getOrCreate()
@@ -190,19 +190,29 @@ def main() -> int:
     spark.createDataFrame([], BRONZE_SCHEMA).write.format("delta").saveAsTable(BRONZE)
     ensure_tables(spark, catalog=CATALOG, schema=SCHEMA)
 
+    # Sub-batch each chunk's Bronze write (full-density ACC chunks are ~1M rows): one huge non-Arrow
+    # createDataFrame+write (Arrow is disabled -- see make_spark -- because Arrow's MapType support for
+    # Bronze's `values: MAP<STRING,DOUBLE>` column is unreliable) pushes a sustained multi-hundred-MB
+    # py4j row stream through a single socket write, which is what was tripping the Broken Pipe on the
+    # full (unstrided) run. Writing in SUB_BATCH-row pieces keeps each py4j transfer small regardless of
+    # chunk size; Delta's append mode makes repeated small appends to the same chunk equivalent to one
+    # big append.
+    SUB_BATCH = 100_000
     bounds = np.linspace(0, len(rows), a.chunks + 1).astype(int)
     for i in range(a.chunks):
         chunk = rows.iloc[bounds[i]:bounds[i + 1]]
         if chunk.empty:
             continue
-        def col(c):
+        def col(sub, c):
             if isinstance(_BRONZE_TYPES[c], TimestampType):
-                return chunk[c].dt.to_pydatetime()
+                return sub[c].dt.to_pydatetime()
             if isinstance(_BRONZE_TYPES[c], LongType):
-                return chunk[c].astype(int).tolist()   # not numpy.int64 -- Spark's row verifier wants a plain int
-            return chunk[c]
-        recs = list(zip(*(col(c) for c in BRONZE_COLUMNS)))
-        spark.createDataFrame(recs, BRONZE_SCHEMA).write.format("delta").mode("append").saveAsTable(BRONZE)
+                return sub[c].astype(int).tolist()   # not numpy.int64 -- Spark's row verifier wants a plain int
+            return sub[c]
+        for j in range(0, len(chunk), SUB_BATCH):
+            sub = chunk.iloc[j:j + SUB_BATCH]
+            recs = list(zip(*(col(sub, c) for c in BRONZE_COLUMNS)))
+            spark.createDataFrame(recs, BRONZE_SCHEMA).write.format("delta").mode("append").saveAsTable(BRONZE)
         print(f"\n--- appended chunk {i + 1}/{a.chunks}: {len(chunk):,} rows, up to {chunk['event_time'].max()} UTC ---", flush=True)
         pass_once(spark, a.run_id, a.participant, a.source_kind, ckpt, f"chunk {i + 1}", cfg)
 
