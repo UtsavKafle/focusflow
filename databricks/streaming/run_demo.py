@@ -27,6 +27,7 @@ except ImportError as exc:  # pragma: no cover - requires a Databricks runtime
     raise ImportError("databricks.streaming.run_demo requires pyspark (run on a Databricks cluster)") from exc
 
 from databricks.streaming import gold_stream, silver_stream
+from databricks.streaming.batch import SilverStreamConfig
 
 SQL_DIR = pathlib.Path(__file__).resolve().parents[1] / "sql"
 
@@ -90,10 +91,18 @@ def main() -> None:
     ap.add_argument("--source-kind", default="synthetic_fixture",
                     choices=["recorded_replay", "synthetic_fixture", "synthetic_injection"])
     ap.add_argument("--checkpoint-root", default=None, help="default /Volumes/<catalog>/<schema>/checkpoints")
+    ap.add_argument("--hr-hz", type=float, default=1.0, help="expected HR sampling rate (coverage denominator)")
+    ap.add_argument("--eda-hz", type=float, default=4.0, help="expected EDA sampling rate")
+    ap.add_argument("--acc-hz", type=float, default=32.0,
+                    help="expected ACC sampling rate. Real data is 32; the SYNTHETIC mock is 8 (pass --acc-hz 8), "
+                         "otherwise every minute reads as 8/32 = 25%% ACC coverage and no night gets a rest estimate")
     ap.add_argument("--continuous", action="store_true", help="run an always-on stream instead of one availableNow catch-up pass")
     a = ap.parse_args()
     checkpoint_root = a.checkpoint_root or f"/Volumes/{a.catalog}/{a.schema}/checkpoints"
     available_now = not a.continuous
+
+    cfg = SilverStreamConfig(expected_hz={"hr": a.hr_hz, "eda": a.eda_hz, "acc": a.acc_hz})
+    print(f"-- expected_hz: hr={a.hr_hz} eda={a.eda_hz} acc={a.acc_hz} --")
 
     spark = SparkSession.builder.getOrCreate()
     ensure_tables(spark, catalog=a.catalog, schema=a.schema)
@@ -101,7 +110,7 @@ def main() -> None:
     print(f"-- silver_stream: run_id={a.run_id} participant={a.participant} available_now={available_now} --")
     silver_q = silver_stream.start(spark, catalog=a.catalog, schema=a.schema, run_id=a.run_id,
                                    participant_id=a.participant, source_kind=a.source_kind,
-                                   checkpoint_root=checkpoint_root, available_now=available_now)
+                                   checkpoint_root=checkpoint_root, available_now=available_now, cfg=cfg)
     silver_q.awaitTermination()
 
     print(f"-- gold_stream: run_id={a.run_id} participant={a.participant} available_now={available_now} --")
