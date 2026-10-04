@@ -95,6 +95,11 @@ def test_silver_feature_batch_matches_direct_pipeline(signals):
             "hr_coverage", "eda_coverage", "acc_coverage"]
     assert len(batched) == len(direct)
     for c in cols:
+        if c in ("window_start", "window_end"):
+            # compare as datetimes: pandas 3 may return ns on one side and us on the other, and
+            # pd.to_numeric would turn those into integers 1000x apart
+            assert (pd.to_datetime(batched[c], utc=True).to_numpy() == pd.to_datetime(direct[c], utc=True).to_numpy()).all()
+            continue
         assert np.allclose(pd.to_numeric(batched[c], errors="coerce"), pd.to_numeric(direct[c], errors="coerce"), equal_nan=True)
     assert batched["run_id"].eq("r1").all() and batched["source_kind"].eq("synthetic_fixture").all()
     assert batched["hr_baseline_z"].isna().all()  # baseline pass hasn't run yet

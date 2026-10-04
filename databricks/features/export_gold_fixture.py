@@ -8,7 +8,14 @@ mock/demo saved-results fallback only. Exporting a recorded_replay run as a "fix
 violate the "never show a fixture as a live run" rule in reverse (silently relabeling real data as
 synthetic); that needs an explicit, separate decision, not this script's default path.
 
-  python -m databricks.features.export_gold_fixture --run-id local-1
+Also refuses a Gold run whose timestamps are still on the raw 2020 mock-generator clock instead of the
+2026 demo scenario clock: feeding an unshifted run_local.py output here would silently export a fixture
+the agent's pressure/calendar logic can't see (the demo calendar lives in October 2026; 2020 timestamps
+register zero pressure and the replan never fires). Run run_local.py with --shift-days 2430 first.
+
+  python -m databricks.features.run_local --participant 001 --raw data/raw --tz-assume America/New_York \
+      --acc-hz 8 --shift-days 2430 --source-kind synthetic_fixture --run-id mock-demo-002
+  python -m databricks.features.export_gold_fixture --run-id mock-demo-002
 """
 from __future__ import annotations
 
@@ -16,6 +23,8 @@ import argparse
 import pathlib
 
 import pandas as pd
+
+SCENARIO_MIN_YEAR = 2026  # docs/handoffs/02-data-b.md / DATA_B_HANDOFF.md: demo calendar is October 2026
 
 
 def export(gold_csv: pathlib.Path, out_dir: pathlib.Path, run_id: str) -> pathlib.Path:
@@ -28,6 +37,15 @@ def export(gold_csv: pathlib.Path, out_dir: pathlib.Path, run_id: str) -> pathli
             f"refusing to export: source_kind values {bad} found alongside synthetic_fixture in "
             f"{gold_csv} -- this script only exports all-synthetic_fixture runs for the saved-results "
             "fallback; a mixed or recorded_replay run needs an explicit, reviewed export decision"
+        )
+    window_end = pd.to_datetime(gold["window_end"], utc=True)
+    if (window_end.dt.year < SCENARIO_MIN_YEAR).any():
+        raise ValueError(
+            f"refusing to export: {gold_csv} has window_end timestamps before {SCENARIO_MIN_YEAR} "
+            f"(earliest {window_end.min()}) -- this looks like an unshifted run_local.py run on the raw "
+            "mock-generator clock (2020), not the demo scenario clock (2026). Re-run run_local.py with "
+            "--shift-days 2430 and re-export; otherwise the exported fixture's pressure/calendar signals "
+            "read as zero against the real October 2026 demo calendar and the replan never fires."
         )
     out_dir.mkdir(parents=True, exist_ok=True)
     gold.to_csv(out_dir / "gold.csv", index=False)

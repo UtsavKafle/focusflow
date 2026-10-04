@@ -1,4 +1,34 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(pytest -q)",
+      "Bash(python3 -c \"import pyspark; print\\(pyspark.__version__\\)\")",
+      "Bash(pytest -q tests/test_streaming_batch.py)",
+      "Bash(python3 -c ' *)",
+      "Bash(git status *)",
+      "Bash(git fetch *)",
+      "Bash(time python fixtures/make_mock_big_ideas.py --out data/raw)",
+      "Bash(pytest -q tests/test_quality_policy.py)",
+      "Bash(time pytest -q tests/test_run_local_shift.py)",
+      "Bash(pytest -q tests/test_run_local_shift.py)",
+      "Bash(python -m databricks.features.run_local --participant 001 --raw data/raw --tz-assume America/New_York --acc-hz 8 --shift-days 2430 --source-kind synthetic_fixture --history-start \"2020-02-13 12:00:00\" --segment-end \"2020-02-17 00:00:00\" --run-id task-c)",
+      "Bash(python -m databricks.features.run_local --participant 001 --raw data/mock --tz-assume America/New_York --acc-hz 8 --source-kind synthetic_fixture --history-start \"2020-02-13 12:00:00\" --segment-end \"2020-02-17 00:00:00\" --run-id mock-1-regen)",
+      "Bash(python -m databricks.features.run_local --participant 001 --raw data/mock --tz-assume America/New_York --acc-hz 8 --source-kind synthetic_fixture --history-start \"2020-02-13 12:00:00\" --segment-end \"2020-02-17 00:00:00\" --run-id mock-1 --out data/derived)",
+      "Bash(pytest -q tests/test_mock_story.py tests/test_contracts_and_fixtures.py)",
+      "Bash(pytest -q tests/test_streaming_idempotency.py)",
+      "Bash(python3 -c \"import databricks.streaming.run_demo\")",
+      "Bash(/usr/libexec/java_home -v 17)",
+      "Bash(python3 -c \"import pyspark, delta; print\\(pyspark.__version__, delta.__version__\\)\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(grep -n \"Caused by\\\\|OutOfMemory\\\\|Too many open files\\\\|ERROR\" /tmp/full_smoke_final2.log | head -20)",
+      "Bash(vm_stat)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)",
+      "Bash(git push *)",
+      "Bash(git ls-tree *)"
+    ]
+  },
   "enabledMcpjsonServers": [
     "claude-flow"
   ]
