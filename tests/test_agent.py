@@ -22,7 +22,7 @@ class FakeProvider:
                 self.results[m["tool_call_id"]] = m["content"]
         t = self.turns.pop(0) if self.turns else (lambda r: "done")
         if callable(t) or tools is None:
-            text = t(self) if callable(t) else "Observation: x Uncertainty: x Planning reason: x Action/status: x"
+            text = t(self) if callable(t) else "What we saw: x What we're unsure about: x What the coach suggests: x Status: x"
             return ag.AssistantMsg(text=text, raw=None)
         calls = []
         for name, args in t:
@@ -52,7 +52,8 @@ def test_no_provider_uses_grounded_fallback(monkeypatch):
     c, st, job, d = run(monkeypatch, None)
     assert job["status"] == "ready" and job["explanation"].startswith(FALLBACK_LABEL)
     assert all(s in job["explanation"] for s in SECTIONS) and "proposed, not applied" in job["explanation"]
-    assert "in 20 of 20 valid minutes" in job["explanation"]
+    assert "for 20 of the last 20 minutes" in job["explanation"]
+    assert "state_id" not in job["explanation"] and "schedule_version" not in job["explanation"]
     assert d["explanation_kind"] == "fallback" and d["model_id"] == "none"
     ok, problems = check_grounding(job["explanation"], sources_for_check([t["result"] for t in d["tool_results"]]),
                                    "America/New_York")
@@ -94,8 +95,8 @@ def test_grounded_llm_answer_is_used(monkeypatch):
 
 def test_hallucinated_number_falls_back(monkeypatch):
     prov = FakeProvider([[("get_remaining_tasks", {})],
-                         lambda p: "Observation: load was 54 minutes above baseline. Uncertainty: none. "
-                                   "Planning reason: deadlines. Action/status: proposed."])
+                         lambda p: "What we saw: load was 54 minutes above baseline. What we're unsure about: none. "
+                                   "What the coach suggests: deadlines. Status: proposed."])
     c, st, job, d = run(monkeypatch, prov)
     assert d["explanation_kind"] == "fallback" and job["explanation"].startswith(FALLBACK_LABEL)
     notes = d["tool_results"][-1]["result"]["notes"]

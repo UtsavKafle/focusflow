@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { GridItem, Segment } from '../lib/plan'
 import { toSegments } from '../lib/plan'
 import { dayRange, fmtDayKey, fmtRange, localParts, ms } from '../lib/time'
+import { Button } from './ui'
 
 const HOUR_PX = 28
 const HOURS = Array.from({ length: 24 }, (_, h) => h)
@@ -81,15 +82,50 @@ export function WeekGrid(props: {
   const asOfMs = ms(asOf)
   const now = asOfMs === null ? null : localParts(asOfMs, tz)
   const nowMarkerRef = useRef<HTMLDivElement>(null)
+  const wellRef = useRef<HTMLDivElement>(null)
+  const [follow, setFollow] = useState(true)
+  // True for a short window after WE move the scroll position, so the onScroll handler below can tell our
+  // own (possibly multi-frame, smooth) scroll apart from a real user scroll and not immediately disable
+  // follow in response to its own first frame.
+  const autoScrollingRef = useRef(false)
+  const autoScrollTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   // Keep the NOW marker in view as the replay clock advances (HOUR_PX=28 makes the full 24h taller than
-  // the visible well, and multi-day weeks make it wider too) -- only while running, so a paused/idle view
-  // doesn't yank the scroll position while someone is reading the plan.
+  // the visible well, and multi-day weeks make it wider too) -- only while running and only while
+  // "Follow now" is on, so a paused/idle view or a manually-scrolled one doesn't get yanked around. Scrolls
+  // ONLY the well's own container (container.scrollTo), never window or scrollIntoView, and only when the
+  // marker has actually left the container's visible area.
   useEffect(() => {
-    if (running && nowMarkerRef.current) {
-      nowMarkerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
-    }
-  }, [running, now?.dayKey, now?.minutes])
+    if (!running || !follow) return
+    const container = wellRef.current
+    const marker = nowMarkerRef.current
+    if (!container || !marker) return
+    const mRect = marker.getBoundingClientRect()
+    const cRect = container.getBoundingClientRect()
+    const markerTop = mRect.top - cRect.top + container.scrollTop
+    const markerLeft = mRect.left - cRect.left + container.scrollLeft
+    const outOfView =
+      markerTop < container.scrollTop ||
+      markerTop > container.scrollTop + container.clientHeight ||
+      markerLeft < container.scrollLeft ||
+      markerLeft > container.scrollLeft + container.clientWidth
+    if (!outOfView) return
+    autoScrollingRef.current = true
+    clearTimeout(autoScrollTimerRef.current)
+    container.scrollTo({
+      top: Math.max(0, markerTop - container.clientHeight / 2),
+      left: Math.max(0, markerLeft - container.clientWidth / 2),
+      behavior: 'smooth',
+    })
+    autoScrollTimerRef.current = setTimeout(() => {
+      autoScrollingRef.current = false
+    }, 600)
+  }, [running, follow, now?.dayKey, now?.minutes])
+
+  const onWellScroll = () => {
+    if (autoScrollingRef.current) return // our own smooth scroll still settling; not a user action
+    setFollow(false)
+  }
 
   const days = useMemo(() => {
     const keys = segments.map((s) => s.dayKey)
@@ -102,13 +138,27 @@ export function WeekGrid(props: {
   if (days.length === 0) return <p className="text-sm text-secondary">No plan blocks to show.</p>
 
   return (
-    <div
-      className="calendar-well max-h-[520px] overflow-y-auto"
-      role="region"
-      aria-label="Weekly calendar, scroll for the full 24 hours and more days"
-      tabIndex={0}
-    >
-      <div className="grid min-w-[560px]" style={{ gridTemplateColumns: `3.25rem repeat(${days.length}, minmax(0, 1fr))` }}>
+    <div>
+      <div className="mb-2 flex justify-end">
+        <Button
+          small
+          glass
+          active={follow}
+          onClick={() => setFollow((f) => !f)}
+          title="Keep the NOW marker in view as the replay clock advances"
+        >
+          Follow now
+        </Button>
+      </div>
+      <div
+        ref={wellRef}
+        onScroll={onWellScroll}
+        className="calendar-well max-h-[520px] overflow-y-auto"
+        role="region"
+        aria-label="Weekly calendar, scroll for the full 24 hours and more days"
+        tabIndex={0}
+      >
+        <div className="grid min-w-[560px]" style={{ gridTemplateColumns: `3.25rem repeat(${days.length}, minmax(0, 1fr))` }}>
         <div />
         {days.map((d) => (
           <div
@@ -156,6 +206,7 @@ export function WeekGrid(props: {
             )}
           </div>
         ))}
+      </div>
       </div>
     </div>
   )

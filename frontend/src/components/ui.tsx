@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import { X } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
 
 type GlassVariant = 'clear' | 'regular' | 'thick'
 type GlassTint = 'neutral' | 'blue' | 'green' | 'red' | 'amber'
@@ -188,24 +189,42 @@ export function Modal(props: { title: string; subtitle?: ReactNode; onClose: () 
  * Coach text. The deterministic explanation comes as "Section: text" lines
  * (Observation / Uncertainty / Planning reason / Action/status); anything else renders as plain paragraphs.
  */
+// Matches a section header with or without a markdown "##" prefix the model may add (e.g. both
+// "Status:" and "## Status:"), so headers render as styled labels, never literal "##" text.
+const SECTION_HEADER_RE = /^#{0,3}\s*([A-Z][A-Za-z/ ']{2,34}):\s*(.*)$/
+
+/** Groups lines into (label, body) sections -- a header's body may continue on following lines until the
+ * next header, which is how real model output (and the deterministic fallback) is shaped. */
+function sectionize(text: string): { label: string | null; body: string }[] {
+  const sections: { label: string | null; body: string[] }[] = [{ label: null, body: [] }]
+  for (const raw of text.split('\n')) {
+    const line = raw.trim()
+    if (!line) continue
+    const m = SECTION_HEADER_RE.exec(line)
+    if (m) {
+      sections.push({ label: m[1], body: m[2] ? [m[2]] : [] })
+    } else {
+      sections[sections.length - 1].body.push(line)
+    }
+  }
+  return sections.filter((s) => s.label || s.body.length).map((s) => ({ label: s.label, body: s.body.join('\n') }))
+}
+
+/** Renders an explanation (LLM or the deterministic fallback) as styled section blocks, with each
+ * section's body run through a real markdown renderer -- headers, bold and lists render properly, never
+ * as literal "##"/"**" text. */
 export function ExplanationText(props: { text: string }) {
-  const lines = props.text
-    .split('\n')
-    .map((l) => l.trim())
-    .filter(Boolean)
+  const sections = sectionize(props.text)
   return (
-    <div className="space-y-2 text-sm leading-relaxed text-ink">
-      {lines.map((line, i) => {
-        const m = /^([A-Z][A-Za-z/ ]{2,24}):\s+(.+)$/.exec(line)
-        return m ? (
-          <div key={i}>
-            <div className="text-[11px] font-semibold tracking-wide text-accent uppercase">{m[1]}</div>
-            <p>{m[2]}</p>
+    <div className="space-y-3 text-sm leading-relaxed text-ink">
+      {sections.map((s, i) => (
+        <div key={i}>
+          {s.label && <div className="text-[11px] font-semibold tracking-wide text-accent uppercase">{s.label}</div>}
+          <div className="explanation-markdown [&_p]:my-1 [&_ul]:my-1 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_strong]:font-semibold [&_em]:italic">
+            <ReactMarkdown>{s.body}</ReactMarkdown>
           </div>
-        ) : (
-          <p key={i}>{line}</p>
-        )
-      })}
+        </div>
+      ))}
     </div>
   )
 }

@@ -1,7 +1,9 @@
 """Explanations (integrator tasks 10 + 11).
 - fallback_explanation(): deterministic, no LLM, built only from tool results + the proposal diff. Labeled as fallback.
 - check_grounding(): every number and clock time in an explanation must appear in tool outputs or the diff, and the
-  four sections (Observation, Uncertainty, Planning reason, Action/status) must be present."""
+  four sections (What we saw, What we're unsure about, What the coach suggests, Status) must be present.
+Plain language for a student: short, four sections, no state_id/run_id/proposal_id/schedule_version in the body
+(those stay in the evidence footer the API already returns separately)."""
 from __future__ import annotations
 
 import json, re
@@ -9,9 +11,10 @@ from datetime import datetime
 from typing import Any, Iterable
 from zoneinfo import ZoneInfo
 
-SECTIONS = ("Observation:", "Uncertainty:", "Planning reason:", "Action/status:")
+SECTIONS = ("What we saw:", "What we're unsure about:", "What the coach suggests:", "Status:")
 FALLBACK_LABEL = "Fallback explanation (generated without a language model from saved tool results)."
 CAVEAT = "Scores are engineering heuristics from one recorded wearable, not a diagnosis or sleep assessment."
+NO_CHANGES = "No changes needed: nothing left to move tonight."
 TIME_RE = re.compile(r"\b(\d{1,2}:\d{2})\s?(AM|PM)?\b", re.I)
 ISO_RE = re.compile(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?Z")
 NUM_RE = re.compile(r"(?<![\w.])\d+(?:\.\d+)?")
@@ -26,8 +29,34 @@ def fmt_time(iso: str, tz: str) -> str:
     return d.strftime("%a ") + d.strftime("%I:%M %p").lstrip("0")
 
 
+def fmt_pct(v: float) -> str:
+    """0..1 heuristic score as a 0-100 integer, matching the UI's own gauges (e.g. recovery_score=0.27 -> "27")."""
+    return str(round(v * 100))
+
+
+def fmt_hm(total_minutes: float) -> str:
+    """Minutes as "H h M m" (or just "H h" / "M m"), matching how a student reads a duration."""
+    n = round(total_minutes)
+    h, m = divmod(n, 60)
+    if h and m:
+        return f"{h} h {m} m"
+    return f"{h} h" if h else f"{m} m"
+
+
 def _span(b: dict, tz: str) -> str:
     return f"{fmt_time(b['start'], tz)}-{fmt_time(b['end'], tz)}"
+
+
+def _change_line(c: dict, tz: str) -> str:
+    new, old = c.get("new_blocks") or [], c.get("old_blocks") or []
+    if new and new[0]["kind"] == "sleep_extension":
+        b = new[0]
+        return f"Add a {b['minutes']}-minute rest block {_span(b, tz)}."
+    blocks = new or old
+    mins = sum(b["minutes"] for b in new) or (blocks[0]["minutes"] if blocks else 0)
+    where = _span(new[0], tz) if new else "later"
+    verb = {"added": "Add", "moved": "Move", "removed": "Remove"}.get(c.get("action"), c.get("action", "Change").capitalize())
+    return f"{verb} a {mins}-minute study block to {where}." if new else f"{verb} a {mins}-minute study block."
 
 
 def fallback_explanation(results: dict[str, dict], tz: str) -> str:
@@ -37,61 +66,60 @@ def fallback_explanation(results: dict[str, dict], tz: str) -> str:
     rest = results.get("get_recent_rest", {})
     dl = results.get("get_upcoming_deadlines", {})
     plan = results.get("request_schedule_replan")
-    w, q, ac = st.get("wearable", {}), st.get("wearable", {}).get("quality", {}), st.get("academic", {})
-
-    obs = []
-    if cmp.get("mean") is not None:
-        obs.append(f"From {fmt_time(cmp['start'], tz)} to {fmt_time(cmp['end'], tz)}, estimated physiological load averaged "
-                   f"{cmp['mean']} and was at or above {cmp.get('threshold')} in {cmp.get('minutes_at_or_above_threshold')} "
-                   f"of {cmp['valid_minutes']} valid minutes, relative to personal baseline {cmp.get('baseline_id')}.")
-    else:
-        obs.append("No valid physiological load minutes were available in the recent window.")
-    if rest.get("estimated_rest_minutes") is not None:
-        obs.append(f"Estimated rest was {rest['estimated_rest_minutes']} minutes against a {rest['target_rest_minutes']}-minute "
-                   f"target (recovery score {rest.get('recovery_score')}).")
-    else:
-        obs.append("Estimated rest is unknown for the last night.")
-
-    unc = [f"Data quality is {q.get('status', 'unknown')}."]
-    if q.get("missing_reasons"):
-        unc.append("Unavailable: " + ", ".join(f"{k} ({v})" for k, v in sorted(q["missing_reasons"].items())) + ".")
-    if rest.get("overnight_coverage") is not None:
-        unc.append(f"Overnight coverage was {rest['overnight_coverage']}.")
-    unc.append("Low movement may be quiet wakefulness or a removed device. " + CAVEAT)
-
-    pr = []
+    w = st.get("wearable", {})
+    q = w.get("quality", {})
+    ac = st.get("academic", {})
     trig = st.get("trigger", {})
-    if trig.get("reason_codes"):
-        pr.append("Rule signals present: " + ", ".join(trig["reason_codes"]) + ".")
+
+    saw = []
+    if cmp.get("mean") is not None:
+        saw.append(f"Load was at or above {fmt_pct(cmp.get('threshold', 0.7))} for "
+                   f"{cmp.get('minutes_at_or_above_threshold')} of the last {cmp['valid_minutes']} minutes.")
+    else:
+        saw.append("No valid load minutes were available in the recent window.")
+    if rest.get("estimated_rest_minutes") is not None and rest.get("target_rest_minutes"):
+        line = f"Estimated rest was {fmt_hm(rest['estimated_rest_minutes'])} against a {fmt_hm(rest['target_rest_minutes'])} target"
+        if rest.get("recovery_score") is not None:
+            line += f"; recovery is {fmt_pct(rest['recovery_score'])}/100."
+        else:
+            line += "."
+        saw.append(line)
+    else:
+        saw.append("Estimated rest is unknown for last night.")
     exams = [e for e in dl.get("fixed_events", []) if e["kind"] == "exam"]
     if exams:
-        pr.append(f"Next exam: {exams[0]['title']} at {fmt_time(exams[0]['start'], tz)} ({exams[0]['hours_until']} hours away).")
-    if ac:
-        pr.append(f"Remaining work is {ac.get('remaining_work_minutes')} minutes; deadline pressure is {ac.get('deadline_pressure')}.")
-    pr.append("Tasks are placed by earliest deadline, then priority; fixed events and protected sleep never move.")
+        saw.append(f"Next exam in {exams[0]['hours_until']:.1f} hours.")
+    if ac.get("deadline_pressure") is not None:
+        saw.append(f"Deadline pressure is {fmt_pct(ac['deadline_pressure'])}%.")
 
-    act = []
+    # Uncertainty comes only from quality.missing_reasons and confound flags -- never invented, and never
+    # silent when there is genuinely nothing to report.
+    unc = []
+    reasons = q.get("missing_reasons") or {}
+    if reasons:
+        unc.append("Missing: " + ", ".join(f"{k.replace('_', ' ')} ({v})" for k, v in sorted(reasons.items())) + ".")
+    if "ACTIVITY_CONFOUND" in (trig.get("suppressed_reason_codes") or []):
+        unc.append("Movement may be confounding the load estimate.")
+    if not unc:
+        unc.append("All signals had full coverage.")
+
+    sug = []
+    has_changes = bool(plan and (plan.get("changes") or plan.get("unscheduled_work")))
     if not plan:
-        act.append("No schedule proposal was produced.")
+        sug.append("No schedule proposal was produced.")
+    elif not has_changes:
+        sug.append(NO_CHANGES)
     else:
         for c in plan["changes"]:
-            if c["new_blocks"] and c["new_blocks"][0]["kind"] == "sleep_extension":
-                act.append(f"Add a rest block {_span(c['new_blocks'][0], tz)} ({c['reason_code']}).")
-                continue
-            task = (c["new_blocks"] or c["old_blocks"])[0]["task_id"]
-            old = ", ".join(_span(b, tz) for b in c["old_blocks"]) or "unscheduled"
-            new = ", ".join(_span(b, tz) for b in c["new_blocks"]) or "removed"
-            mins = sum(b["minutes"] for b in c["new_blocks"])
-            act.append(f"{c['action'].capitalize()} {task}: {old} -> {new}, {mins} minutes ({c['reason_code']}).")
+            sug.append(_change_line(c, tz))
         for u in plan["unscheduled_work"]:
-            act.append(f"{u['task_id']}: {u['minutes']} minutes could not be placed before its deadline "
-                       f"{fmt_time(u['deadline'], tz)} (no feasible plan found by this scheduler).")
-        if not plan["changes"] and not plan["unscheduled_work"]:
-            act.append("No schedule change is recommended.")
-        act.append("Status: proposed, not applied." if not plan.get("applied") else "Status: applied.")
+            sug.append(f"{u['minutes']} minutes could not fit before the deadline {fmt_time(u['deadline'], tz)}.")
 
-    return "\n".join([FALLBACK_LABEL, "Observation: " + " ".join(obs), "Uncertainty: " + " ".join(unc),
-                      "Planning reason: " + " ".join(pr), "Action/status: " + " ".join(act)])
+    status = "Applied." if plan and plan.get("applied") else (NO_CHANGES if plan and not has_changes else "proposed, not applied.")
+
+    body = "\n".join([FALLBACK_LABEL, "What we saw: " + " ".join(saw), "What we're unsure about: " + " ".join(unc),
+                      "What the coach suggests: " + " ".join(sug), "Status: " + status])
+    return body + "\n" + CAVEAT
 
 
 def _walk(x: Any) -> Iterable[Any]:
@@ -107,8 +135,10 @@ def _num_forms(v: float) -> set[str]:
     out = {str(v), f"{v:g}", f"{v:.2f}", f"{v:.1f}", str(round(v)), str(int(v))}
     if 0 <= v <= 1:
         out |= {str(round(v * 100)), f"{v * 100:g}"}
-    if isinstance(v, int) and v >= 30:  # minutes may be quoted as hours
+    if isinstance(v, int) and v >= 30:  # minutes may be quoted as decimal hours, or split "H h M m"
         out |= {f"{v / 60:g}", f"{v / 60:.1f}"}
+        h, m = divmod(v, 60)
+        out |= {str(h), str(m)}
     return out
 
 
@@ -129,7 +159,9 @@ def allowed_tokens(sources: list[Any], tz: str) -> tuple[set[str], set[str]]:
 
 
 def check_grounding(text: str, sources: list[Any], tz: str) -> tuple[bool, list[str]]:
-    """Returns (ok, problems). Problems list ungrounded numbers/times and missing sections."""
+    """Returns (ok, problems). Problems list ungrounded numbers/times and missing sections. Does not require
+    state_id/run_id/proposal_id/schedule_version -- the explanation is instructed to never cite them, so
+    there is nothing ID-shaped to ground; only values actually written into the text are checked."""
     problems = [f"missing section {s}" for s in SECTIONS if s not in text]
     nums, times = allowed_tokens(sources, tz)
     body = text.replace(FALLBACK_LABEL, "")
