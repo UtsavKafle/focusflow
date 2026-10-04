@@ -57,3 +57,19 @@
   - All of the above are exercised by the Spark-free regression tests added to `tests/test_streaming_batch.py` (NaN/NaT handling, `safe_object_map`, column-constant drift guards) where the fix was pandas-side logic; the Spark-only fixes (MERGE SQL, skipChangeCommits, DDL comment-splitting, lookback sizing) are only verified by the local Spark smoke test, since they need an actual Spark session.
   - Feature math (`minute_features`/`baselines`/`state.py`) was NOT changed -- every mismatch traced to the Spark/pandas glue, never to the math itself.
   - **Still unverified without real Databricks:** Unity Catalog's actual multi-catalog resolution behavior (only tested against `spark_catalog` locally, though the MERGE-via-SQL rewrite uses the same syntax Unity Catalog expects); serverless's actual trigger/compute limits for `availableNow`; whether `.collect()` has the same local-timezone quirk on Databricks Runtime (if not, the `.toPandas()` fix is harmless there either way since both would then agree); real spend/warehouse behavior; `/Volumes/...` checkpoint paths (local run used a filesystem path instead).
+
+- Data A: naive source timestamps require an explicit zone; ET overnight selection is withheld until then.
+- Data A: ACC/IBI stay unscaled and flagged `unit=unverified` until the modified CSV units are confirmed; Data B must gate affected features.
+- Data A: physical one-based source rows define event IDs; malformed rows are counted locally and omitted from finite-only event payloads.
+- Data A: Bronze reads ready markers after immutable uploads and uses insert-only MERGE; availableNow is bounded and only one writer owns the Bronze table.
+- Data A: bookmarks publish the real prior history; reset creates a new run/checkpoint, and Gold processed_time remains null until Data B supplies it.
+- Mock Data A: supplied participant 001 CSVs are synthetic_fixture, not evidence from the PhysioNet release.
+- Mock Data A: naive timestamps use America/New_York; scenario dates shift +2430 local calendar days before re-localizing and converting to UTC.
+- Mock Data A: ACC sampling is 8 Hz; downstream completeness must override the 32 Hz recorded-data default.
+- Mock Data A: 1/64 g per ACC unit is an unverified synthetic assumption; raw Bronze ACC stays flagged and unscaled, and Data B must explicitly gate its use.
+- Mock Data A: 0.05 g stillness and 0.25 g activity scaling depend on that assumption; passing synthetic tests does not verify real units.
+- Mock demo correction: keep 48 h history, extend demo to 36 h ending Feb 17 00:00 source / Oct 13 00:00 New York scenario time to include the cramming trigger.
+- Mock quality correction: flag HR >220 bpm as hr_above_engineering_range, retain raw readings; the planted 255 bpm row increases HR flags to 12.
+- Mock publication correction: the 72 h prepared run is superseded; use a fresh run ID for the corrected interval and HR flags, preserving old immutable audit files.
+- Mock handoff: bulk-loaded Bronze contains future demo rows; Data B must enforce feature/baseline cutoffs and cannot infer live replay progress from the full table's maximum timestamp.
+- Mock verification: mock-demo-002 is the corrected demo run; mock-smoke-001 is only a five-minute ingestion test and must not be used as baseline history.
