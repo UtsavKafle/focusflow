@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BOOKMARKS, SCENARIOS, SPEEDS } from '../demoBookmarks'
+import { BOOKMARKS, DEFAULT_BOOKMARK, DEFAULT_SPEED, SCENARIOS, SPEEDS } from '../demoBookmarks'
 import type { FocusFlow } from '../hooks/useFocusFlow'
 import { num } from '../lib/format'
 import { fmtDayTime } from '../lib/time'
@@ -88,7 +88,7 @@ export function DemoPanel(props: { ff: FocusFlow; tz: string; onClose: () => voi
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button tone="primary" disabled={busy} onClick={() => void run(() => ff.replayStart(selected, BOOKMARKS[0]?.at))}>
+          <Button tone="primary" disabled={busy} onClick={() => void run(() => ff.replayStart(selected, DEFAULT_BOOKMARK.at, DEFAULT_SPEED))}>
             Play from start
           </Button>
           <Button glass disabled={busy || replay?.state !== 'running'} onClick={() => void run(ff.replayPause)}>

@@ -1,6 +1,7 @@
 import type { LucideIcon } from 'lucide-react'
 import { BatteryCharging, Footprints, Gauge, Heart, HeartPulse, Moon } from 'lucide-react'
 import type { ReactNode } from 'react'
+import { useEffect, useState } from 'react'
 import { humanize, num } from '../lib/format'
 import { fmtMinutes, fmtTime } from '../lib/time'
 import type { StudentState } from '../types'
@@ -87,6 +88,15 @@ const score100 = (v: unknown) => {
 const QUALITY_TONE = { sufficient: 'good', limited: 'alert', unavailable: 'bad' } as const
 
 export function PhysiologyCard(props: { state: StudentState; tz: string }) {
+  // Ticks every time a genuinely new state object arrives (the backend only emits state.updated -- and so
+  // this component only re-renders with a new `state` -- when the Gold row key or a version actually
+  // changes), so this is visible proof a fresh update landed even on a poll where the values it displays
+  // happen to be unchanged (e.g. estimated rest only updates once per night).
+  const [updatedAt, setUpdatedAt] = useState(() => new Date())
+  useEffect(() => {
+    setUpdatedAt(new Date())
+  }, [props.state])
+
   const w = props.state.wearable
   const q = w.quality
   const reasons = q.missing_reasons ?? {}
@@ -111,9 +121,14 @@ export function PhysiologyCard(props: { state: StudentState; tz: string }) {
       iconTone="rose"
       subtitle={`${fmtTime(w.window_start, props.tz)} – ${fmtTime(w.window_end, props.tz)} window`}
       right={
-        <Chip tone={QUALITY_TONE[q.status] ?? 'neutral'} title="Signal quality for this window">
-          Data quality: {q.status}
-        </Chip>
+        <div className="text-right">
+          <Chip tone={QUALITY_TONE[q.status] ?? 'neutral'} title="Signal quality for this window">
+            Data quality: {q.status}
+          </Chip>
+          <div className="mt-1 text-[10px] text-muted" title="Local time this card last received a new state">
+            updated {updatedAt.toLocaleTimeString()}
+          </div>
+        </div>
       }
     >
       <div className="metric-primary">

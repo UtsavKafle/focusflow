@@ -85,13 +85,21 @@ export function useFocusFlow() {
   }, [allDecisions])
 
   // ---- snapshots -----------------------------------------------------------
+  // Multiple triggers can call refreshState concurrently (the SSE state.updated debounce, a replay
+  // start/jump's own await refreshSnapshot(), an initial mount) with no cancellation between them. Without
+  // sequencing, a slower, now-superseded request's response could resolve after a faster, fresher one and
+  // overwrite it with stale data -- e.g. a replay bookmark jump briefly showing the wrong replay time
+  // because an in-flight pre-jump request's response lands after the jump's own fresh one.
+  const stateSeqRef = useRef(0)
   const refreshState = useCallback(async () => {
+    const seq = ++stateSeqRef.current
     let s: StudentState
     try {
       s = await api.state()
     } catch (e) {
       // 503 STATE_NOT_READY: the run exists but no wearable row has been processed yet. Not an error.
       if (e instanceof ApiError && e.code === 'STATE_NOT_READY') {
+        if (seq !== stateSeqRef.current) return // a newer refreshState call started; discard this one
         setState(null)
         setHistory(null)
         setNotReady(true)
@@ -100,6 +108,7 @@ export function useFocusFlow() {
       }
       throw e
     }
+    if (seq !== stateSeqRef.current) return // discard: superseded by a newer call before this one resolved
     setNotReady(false)
     setState(s)
     // History is cut at the replay clock so the timeline never shows "future" windows.
@@ -107,6 +116,7 @@ export function useFocusFlow() {
       api.history(s.as_of).catch(() => null),
       api.replayStatus().catch(() => null),
     ])
+    if (seq !== stateSeqRef.current) return // discard: superseded while these were in flight
     if (h) setHistory(h)
     if (r) setReplay(r)
   }, [])
@@ -375,10 +385,15 @@ export function useFocusFlow() {
   )
 
   const replayStart = useCallback(
-    (scenarioId: string, bookmark?: string) =>
+    (scenarioId: string, bookmark?: string, speedOverride?: number) =>
       guard('Replay start', async () => {
+        // speedOverride bypasses the stale-closure gap between calling setSpeed() and this callback
+        // picking up the new `speed` state on the next render -- a caller that wants to both change
+        // speed and start in one click (e.g. "Play from start") must pass the value directly.
+        const useSpeed = speedOverride ?? speed
         // In fixture mode a different scenario_id switches the scenario and starts a new run.
-        await api.replayStart({ scenario_id: scenarioId, speed, bookmark: bookmark ?? null })
+        await api.replayStart({ scenario_id: scenarioId, speed: useSpeed, bookmark: bookmark ?? null })
+        if (speedOverride !== undefined) setSpeed(speedOverride)
         await refreshSnapshot()
       }),
     [guard, refreshSnapshot, speed],

@@ -143,7 +143,7 @@ export function PlanCard(props: { ff: FocusFlow; tz: string; onWhy: (blockId: st
 
         <UnscheduledList work={unscheduled} calendar={calendar} tz={tz} proposed={diffing} />
 
-        <WeekGrid items={items} tz={tz} asOf={state?.as_of ?? null} onBlockClick={props.onWhy} />
+        <WeekGrid items={items} tz={tz} asOf={state?.as_of ?? null} running={ff.replay?.state === 'running'} onBlockClick={props.onWhy} />
         <PlanLegend />
 
         {diffing && proposal && (

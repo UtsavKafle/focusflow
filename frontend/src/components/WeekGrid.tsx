@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import type { GridItem, Segment } from '../lib/plan'
 import { toSegments } from '../lib/plan'
 import { dayRange, fmtDayKey, fmtRange, localParts, ms } from '../lib/time'
@@ -73,12 +73,23 @@ export function WeekGrid(props: {
   items: GridItem[]
   tz: string
   asOf: string | null
+  running?: boolean
   onBlockClick?: (blockId: string) => void
 }) {
-  const { items, tz, asOf } = props
+  const { items, tz, asOf, running } = props
   const segments = useMemo(() => toSegments(items, tz), [items, tz])
   const asOfMs = ms(asOf)
   const now = asOfMs === null ? null : localParts(asOfMs, tz)
+  const nowMarkerRef = useRef<HTMLDivElement>(null)
+
+  // Keep the NOW marker in view as the replay clock advances (HOUR_PX=28 makes the full 24h taller than
+  // the visible well, and multi-day weeks make it wider too) -- only while running, so a paused/idle view
+  // doesn't yank the scroll position while someone is reading the plan.
+  useEffect(() => {
+    if (running && nowMarkerRef.current) {
+      nowMarkerRef.current.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+    }
+  }, [running, now?.dayKey, now?.minutes])
 
   const days = useMemo(() => {
     const keys = segments.map((s) => s.dayKey)
@@ -91,7 +102,12 @@ export function WeekGrid(props: {
   if (days.length === 0) return <p className="text-sm text-secondary">No plan blocks to show.</p>
 
   return (
-    <div className="calendar-well" role="region" aria-label="Weekly calendar, scroll horizontally for more days" tabIndex={0}>
+    <div
+      className="calendar-well max-h-[520px] overflow-y-auto"
+      role="region"
+      aria-label="Weekly calendar, scroll for the full 24 hours and more days"
+      tabIndex={0}
+    >
       <div className="grid min-w-[560px]" style={{ gridTemplateColumns: `3.25rem repeat(${days.length}, minmax(0, 1fr))` }}>
         <div />
         {days.map((d) => (
@@ -129,6 +145,7 @@ export function WeekGrid(props: {
               ))}
             {now?.dayKey === d && (
               <div
+                ref={nowMarkerRef}
                 className="pointer-events-none absolute inset-x-0 z-20 border-t-2 border-danger"
                 style={{ top: (now.minutes / 60) * HOUR_PX }}
               >
