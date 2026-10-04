@@ -10,7 +10,10 @@ def mk(s="trigger"):
 def test_state_and_schedule():
     c = mk()
     st = c.get("/api/state").json()
-    assert st["source_kind"] == "synthetic_fixture" and st["trigger"]["replan_recommended"]
+    assert st["source_kind"] == "synthetic_fixture"
+    # pressure-v1 gives ~0.12 here; demo-rules-2 fires at >= 0.10 (team decision, contracts/CHANGELOG.md #16)
+    assert st["trigger"]["reason_codes"] == ["SUSTAINED_LOAD", "LIMITED_ESTIMATED_REST", "HIGH_PRESSURE"]
+    assert st["trigger"]["replan_recommended"] and st["trigger"]["rule_version"] == "demo-rules-2"
     assert c.get("/api/schedule").json()["schedule_version"] == 2
     assert c.get("/api/health").json()["mode"] == "synthetic_fixture"
 

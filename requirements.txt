@@ -7,3 +7,6 @@ jsonschema>=4
 sse-starlette>=2
 databricks-sql-connector>=3
 python-dotenv>=1
+pandas>=2.2,<3        # Data A adapter (imported by simulator.replay and its tests)
+databricks-sdk>=0.40,<1   # live replay uploads to the landing volume (lazy import)
+anthropic>=1.11   # optional: only imported when LLM_API_KEY is set

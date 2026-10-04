@@ -1,171 +1,159 @@
-"""Fixture-backed MOCK API implementing contracts/API.md so frontend + agent can start before Databricks.
-Replace the store with a Databricks SQL reader later (FOCUSFLOW_DATA_SOURCE=databricks); keep the routes."""
+"""FocusFlow API (contracts/API.md). Real state composition, SQLite store, SSE publisher, background replan jobs.
+FOCUSFLOW_DATA_SOURCE=fixture (default, no credentials) | databricks. FOCUSFLOW_FIXTURE picks the fixture scenario."""
 from __future__ import annotations
 
-import itertools, json, os, pathlib, uuid
-from datetime import datetime, timezone
+import asyncio, json, os, sys
+from datetime import datetime
+from typing import Optional
 
-from fastapi import FastAPI, HTTPException, Query
+if "pytest" not in sys.modules:  # .env at the repo root; real env vars win; tests stay credential-free
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(os.path.dirname(__file__), "..", "..", ".env"), override=False)
+
+from fastapi import BackgroundTasks, FastAPI, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 
-from contracts.models import (ApplyRequest, CalendarBundle, ChatRequest, ReplanJob, ReplanRequest, ReplayStartRequest,
-                              ReplayStatus, Schedule, ScheduleProposal, StudentState, TaskProgressRequest)
-from scheduler.validate import validate_proposal
-
-FIX = pathlib.Path(__file__).resolve().parents[2] / "fixtures" / "scenarios"
-
-
-def _load(name: str):
-    d = FIX / name
-    rd = lambda f: json.loads((d / f).read_text())
-    return rd("meta.json"), rd("calendar.json"), rd("schedule.json"), rd("states.json"), rd("history.json"), rd("proposal.json"), rd("explanation.json")
+from contracts.models import ApplyRequest, ChatRequest, ReplanRequest, ReplayStartRequest, TaskProgressRequest
+from agent.agent import run_chat
+from backend.app.services import ApiError, Services, dumps
+from backend.app.sources import FixtureSource
+from backend.app.store import Store
 
 
-def err(status: int, code: str, message: str, retryable: bool = False):
-    return JSONResponse(status_code=status, content={"code": code, "message": message, "retryable": retryable})
+def _ts(s: Optional[str]) -> Optional[datetime]:
+    return datetime.fromisoformat(s.replace("Z", "+00:00")) if s else None
 
 
-def create_app(scenario: str = "trigger") -> FastAPI:
-    app = FastAPI(title="FocusFlow mock API", version="1.0")
-    meta, cal, sched, states, history, proposal, expl = _load(scenario)
-    S = {"cal": CalendarBundle.model_validate(cal), "sched": Schedule.model_validate(sched),
-         "states": [StudentState.model_validate(s) for s in states], "cursor": len(states) - 1,
-         "replay": "idle", "jobs": {}, "events": [], "seq": itertools.count(1), "decisions": {}}
+def build_services(scenario: str, data_source: str, db_path: str) -> Services:
+    if data_source == "databricks":
+        from backend.app.databricks_reader import DatabricksSource  # task 6; import only when configured
+        source = DatabricksSource.from_env()
+    else:
+        source = FixtureSource(scenario)
+    return Services(source, Store(db_path), scenario, data_source,
+                    auto_apply=os.getenv("FOCUSFLOW_AUTO_APPLY", "0").split()[0] in ("1", "true"))
 
-    def emit(type_: str, payload: dict):
-        S["events"].append({"event_id": f"evt-{uuid.uuid4().hex[:8]}", "sequence": next(S["seq"]), "run_id": meta["run_id"],
-                            "event_time": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"), "type": type_, "payload": payload})
 
-    def cur() -> StudentState:
-        st = S["states"][S["cursor"]].model_copy(deep=True)
-        st.academic.schedule_version = S["sched"].schedule_version
-        st.academic.tasks_version = S["cal"].tasks_version
-        return st
+def create_app(scenario: str = "trigger", data_source: str = "fixture", db_path: str = ":memory:") -> FastAPI:
+    app = FastAPI(title="FocusFlow API", version="1.0")
+    # Dev uses the Vite proxy (same origin). Set FOCUSFLOW_CORS_ORIGINS only if the UI is served from another origin.
+    origins = [o.strip() for o in os.getenv("FOCUSFLOW_CORS_ORIGINS", "").split("#")[0].split(",") if o.strip()]
+    if origins:
+        app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["*"], allow_headers=["*"])
+    svc = build_services(scenario, data_source, db_path)
+    app.state.svc = svc
+
+    @app.exception_handler(ApiError)
+    def _api_error(_: Request, e: ApiError):
+        return JSONResponse(status_code=e.status, content=e.body.model_dump())
 
     @app.get("/api/health")
     def health():
-        return {"ok": True, "mode": "synthetic_fixture", "scenario": scenario, "label": meta["label"]}
+        return {"ok": True, "mode": svc.source.mode, "data_source": svc.data_source, "scenario": svc.scenario,
+                "label": svc.source.label, "run_id": svc.run_id}
 
     @app.get("/api/state")
-    def state(run_id: str | None = None):
-        return json.loads(cur().model_dump_json())
+    def state(run_id: Optional[str] = None):
+        st = svc.compose()
+        if st is None:
+            raise ApiError(503, "STATE_NOT_READY", "no wearable state processed yet for this run", retryable=True)
+        return dumps(st)
 
     @app.get("/api/history")
-    def hist(run_id: str | None = None, start: str | None = None, end: str | None = None):
-        rows = history
-        if start: rows = [r for r in rows if r["window_end"] >= start]
-        if end: rows = [r for r in rows if r["window_end"] <= end]
-        return {"schema_version": "1.0", "source_kind": "synthetic_fixture", "windows": rows}
+    def history(run_id: Optional[str] = None, start: Optional[str] = None, end: Optional[str] = None):
+        return svc.history(_ts(start), _ts(end))
 
     @app.get("/api/calendar")
     def calendar():
-        return json.loads(S["cal"].model_dump_json())
+        return dumps(svc.calendar())
 
     @app.get("/api/schedule")
     def schedule():
-        return json.loads(S["sched"].model_dump_json())
+        return dumps(svc.schedule())
 
     @app.post("/api/replan", status_code=202)
-    def replan(req: ReplanRequest):
-        if req.schedule_version != S["sched"].schedule_version or req.tasks_version != S["cal"].tasks_version \
-                or req.calendar_version != S["cal"].calendar_version:
-            return err(409, "STALE_VERSION", "input versions are stale; refetch state and schedule")
-        job_id = f"job-{uuid.uuid4().hex[:8]}"
-        emit("agent.started", {"job_id": job_id})
-        prop = ScheduleProposal.model_validate(proposal) if proposal else None
-        if prop:
-            rep = validate_proposal(S["cal"], prop)
-            if not rep.passed:
-                S["jobs"][job_id] = ReplanJob(job_id=job_id, status="failed", error={"code": "INVALID_PROPOSAL", "message": "; ".join(rep.messages)})
-                return {"job_id": job_id}
-            emit("schedule.proposed", {"job_id": job_id, "proposal_id": prop.proposal_id, "status": prop.status})
-        text = expl["text"] if expl else "No schedule change recommended right now."
-        S["jobs"][job_id] = ReplanJob(job_id=job_id, status="ready", proposal=prop, explanation=text,
-                                      evidence_ids=(expl or {}).get("evidence_ids", []))
-        emit("agent.explanation", {"job_id": job_id, "text": text})
-        return {"job_id": job_id}
+    def replan(req: ReplanRequest, bg: BackgroundTasks):
+        job, created = svc.create_job(req)
+        if created:
+            bg.add_task(svc.run_job, job.job_id, req)
+        return {"job_id": job.job_id}
 
     @app.get("/api/replans/{job_id}")
     def get_job(job_id: str):
-        j = S["jobs"].get(job_id)
-        if not j: return err(404, "NOT_FOUND", "unknown job")
-        return json.loads(j.model_dump_json())
+        return dumps(svc.job(job_id))
 
     @app.post("/api/replans/{job_id}/apply")
     def apply(job_id: str, body: ApplyRequest):
-        j = S["jobs"].get(job_id)
-        if not j: return err(404, "NOT_FOUND", "unknown job")
-        if not j.proposal or j.status != "ready": return err(422, "NOTHING_TO_APPLY", "job has no applicable proposal")
-        if body.expected_schedule_version != S["sched"].schedule_version:
-            return err(409, "STALE_VERSION", "schedule changed since proposal; refetch", retryable=False)
-        p = j.proposal
-        S["sched"] = Schedule(schedule_version=S["sched"].schedule_version + 1, blocks=p.blocks, unscheduled_work=p.unscheduled_work)
-        j.status = "applied"
-        S["decisions"][job_id] = {"proposal": json.loads(p.model_dump_json()), "explanation": j.explanation}
-        emit("schedule.applied", {"job_id": job_id, "schedule_version": S["sched"].schedule_version})
-        return json.loads(S["sched"].model_dump_json())
+        return dumps(svc.apply(job_id, body.expected_schedule_version))
 
     @app.get("/api/decisions/{decision_id}")
     def decision(decision_id: str):
-        d = S["decisions"].get(decision_id)
-        return d if d else err(404, "NOT_FOUND", "unknown decision")
+        return svc.decision(decision_id)
 
     @app.post("/api/chat")
     def chat(req: ChatRequest):
-        text = (expl or {}).get("text", "Nothing unusual in the recent window.")
-        return {"answer": f"[fixture answer] {text}", "evidence_ids": (expl or {}).get("evidence_ids", []), "synthetic": True}
+        if req.decision_id:
+            svc.decision(req.decision_id)  # 404 if unknown
+        return run_chat(svc, req.message, req.decision_id)  # answers from saved decisions, not a fresh guess
 
     @app.post("/api/tasks/{task_id}/progress")
     def progress(task_id: str, body: TaskProgressRequest):
-        if body.expected_tasks_version != S["cal"].tasks_version:
-            return err(409, "STALE_VERSION", "tasks changed; refetch")
-        t = next((t for t in S["cal"].tasks if t.task_id == task_id), None)
-        if not t: return err(404, "NOT_FOUND", "unknown task")
-        t.remaining_minutes = max(0, t.remaining_minutes - body.completed_minutes)
-        if t.remaining_minutes == 0: t.status = "done"
-        S["cal"].tasks_version += 1
-        return json.loads(S["cal"].model_dump_json())
+        return dumps(svc.progress(task_id, body.completed_minutes, body.expected_tasks_version))
 
-    def status() -> ReplayStatus:
-        st = S["states"][S["cursor"]]
-        return ReplayStatus(run_id=meta["run_id"], mode="synthetic_fixture", state=S["replay"], speed=1.0,
-                            published_time=st.as_of, processed_time=st.as_of, lag_seconds=0.0)
+    def _status():
+        return dumps(svc.source.status(svc.run_id))
 
     @app.post("/api/replay/start")
     def r_start(body: ReplayStartRequest):
-        S["replay"], S["cursor"] = "running", 0
-        emit("replay.updated", {"state": "running"})
-        return {"run_id": meta["run_id"]}
+        if svc.data_source == "fixture" and body.scenario_id != svc.scenario:
+            svc.scenario, svc.source = body.scenario_id, FixtureSource(body.scenario_id)
+            svc.new_run()
+        try:
+            svc.source.start(body.speed, body.bookmark)
+        except ValueError as e:  # Data A ReplayController: unsupported speed, short bookmark history, used run_id
+            raise ApiError(422, "REPLAY_REJECTED", str(e))
+        svc.bus.emit(svc.run_id, "replay.updated", _status())
+        return {"run_id": svc.run_id}
 
     @app.post("/api/replay/pause")
     def r_pause():
-        S["replay"] = "paused"; emit("replay.updated", {"state": "paused"}); return json.loads(status().model_dump_json())
+        svc.source.pause()
+        svc.bus.emit(svc.run_id, "replay.updated", _status())
+        return _status()
 
     @app.post("/api/replay/reset")
     def r_reset():
-        S["replay"], S["cursor"] = "idle", len(S["states"]) - 1
-        S["sched"] = Schedule.model_validate(sched); S["cal"] = CalendarBundle.model_validate(cal); S["jobs"].clear()
-        emit("replay.updated", {"state": "idle"}); return json.loads(status().model_dump_json())
+        try:
+            svc.source.reset()
+        except ValueError as e:
+            raise ApiError(422, "REPLAY_REJECTED", str(e))
+        svc.new_run()  # new run state; earlier proposals/decisions stay in the store
+        svc.bus.emit(svc.run_id, "replay.updated", _status())
+        return _status()
 
     @app.get("/api/replay/status")
     def r_status():
-        return json.loads(status().model_dump_json())
+        return _status()
 
-    @app.post("/api/mock/advance")  # MOCK ONLY: step the fixture cursor to simulate a live stream
-    def advance(n: int = 1):
-        S["cursor"] = min(len(S["states"]) - 1, S["cursor"] + n)
-        emit("state.updated", {"state_id": S["states"][S["cursor"]].state_id})
-        return {"cursor": S["cursor"], "of": len(S["states"])}
+    if data_source == "fixture":
+        @app.post("/api/mock/advance")  # fixture only: step the replay cursor
+        def advance(n: int = 1):
+            cursor = svc.source.advance(n)
+            svc.compose()  # emits state.updated if the state changed
+            return {"cursor": cursor, "of": len(svc.source.states)}
 
     @app.get("/api/events")
-    def events(once: bool = Query(False, description="mock/test: send backlog then close")):
-        import asyncio
+    def events(once: bool = Query(False, description="send backlog then close (tests)")):
         async def gen():
-            sent = 0
+            seq = 0
             while True:
-                while sent < len(S["events"]):
-                    yield f"event: {S['events'][sent]['type']}\ndata: {json.dumps(S['events'][sent])}\n\n"; sent += 1
-                if once: return
+                svc.compose()  # detect replay progress -> state.updated
+                for e in svc.bus.since(seq):
+                    seq = e.sequence
+                    yield f"id: {e.event_id}\nevent: {e.type}\ndata: {e.model_dump_json()}\n\n"
+                if once:
+                    return
                 yield ": keepalive\n\n"
                 await asyncio.sleep(1)
         return StreamingResponse(gen(), media_type="text/event-stream")
@@ -173,4 +161,5 @@ def create_app(scenario: str = "trigger") -> FastAPI:
     return app
 
 
-app = create_app(os.getenv("FOCUSFLOW_FIXTURE", "trigger"))
+app = create_app(os.getenv("FOCUSFLOW_FIXTURE", "trigger"), os.getenv("FOCUSFLOW_DATA_SOURCE", "fixture").split()[0],
+                 os.getenv("FOCUSFLOW_DB_PATH", ":memory:"))
