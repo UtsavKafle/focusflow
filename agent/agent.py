@@ -239,7 +239,13 @@ def run_investigation(svc, job_id: str, req, state) -> dict:
         if text and box.proposal is None:
             notes.append("model did not request a replan; its text cannot describe the diff")
             text = None
-    sources = sources_for_check([c["result"] for c in box.calls])  # only what the model actually saw
+    # Only what the model actually saw: its own tool call results, plus the facts given directly in the
+    # _llm_loop prompt (state_id, schedule_version, run_id) rather than via a tool call. Without the
+    # second part, a model that correctly echoes back its own state_id or schedule_version gets its
+    # whole answer rejected as "ungrounded", since those numbers never appear in any tool result.
+    sources = sources_for_check([c["result"] for c in box.calls] +
+                                 [{"state_id": state.state_id, "schedule_version": state.academic.schedule_version,
+                                   "run_id": state.run_id}])
     _scripted(box, state, list(req.reason_codes), emit)  # fills any evidence the model skipped; never re-plans
     latest = {c["tool"]: c["result"] for c in box.calls}
     kind, model_id = "fallback", "none"
