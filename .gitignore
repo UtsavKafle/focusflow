@@ -17,3 +17,5 @@ spark-warehouse/
 metastore_db/
 derby.log
 03-integrator.md
+.claude/settings.local.json
+.claude-flow/
